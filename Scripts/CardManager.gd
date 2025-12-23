@@ -11,12 +11,35 @@ var is_hovering_on_card
 var player_hand_reference
 var opponent_hand_reference
 
+var deck = [] 
+var discard = []
+var interaction = false
+
 func _ready() -> void:
 	screen_size = get_viewport_rect().size
 	player_hand_reference = $"../PlayerHand"
 	opponent_hand_reference = $"../OpponentHand"
-
-
+	
+	for i in range(1, 13):
+		for j in ["h", "c", "d", "s"]:
+			deck.append([j, i])
+	
+func draw_deck(hand):
+	#draw a card from the deck returns the card
+	#add empty deck
+	var sn = deck.pick_random()
+	deck.erase(sn)
+	
+	var card_scene = preload(CARD_SCENE_PATH)
+	var new_card = card_scene.instantiate() as Node2D
+	new_card.setup(sn[0], sn[1])
+	new_card.position = $"../Deck".position
+	$".".add_child(new_card)
+	new_card.name = "Card"
+	hand.add_card_to_hand(new_card, 0.1)
+	
+	return new_card
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if card_being_dragged:
@@ -25,33 +48,39 @@ func _process(delta: float) -> void:
 			 clamp(mouse_pos.y, 0, screen_size.y))
 
 func _input(event):
+	if !interaction:
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			var card = raycast_check_for_card()
 			if card == null:
 				return
 			if card in player_hand_reference.hand:
-				place_card(card)
-				
-				#start_drag(card)
+				if card in $"..".playablecards:
+					print($"..".playablecards)
+					place_card(card, player_hand_reference)
+					$"..".opponent_turn()
+					#start_drag(card)
 			elif card in opponent_hand_reference.hand:
 				card.toggle()
 			elif card == $"../Deck":
-				var card_scene = preload(CARD_SCENE_PATH)
-				var new_card = card_scene.instantiate() as Node2D
-				new_card.position = $"../Deck".position
-				$".".add_child(new_card)
-				new_card.name = "Card"
-				player_hand_reference.add_card_to_hand(new_card, 0.1)
+				draw_deck(player_hand_reference)
+				$"..".opponent_turn()
 		else:
 			if card_being_dragged:
 				pass
 				#finish_drag()
 				
-func place_card(id):
+func place_card(id, hand):
 	#places card the discard place
-	player_hand_reference.animate_card_to_position(id, $"../CardSlot".position, 0.1)
-	player_hand_reference.remove_card_from_hand(id)
+	hand.animate_card_to_position(id, $"../CardSlot".position, 0.1)
+	hand.remove_card_from_hand(id)
+	discard.append(id.get_suit_number())
+	if $"../CardSlot".card != null:
+		await get_tree().create_timer(0.06).timeout
+		$"../CardSlot".card.queue_free()
+		#make the id card move to the background
+	$"../CardSlot".card = id
 
 func start_drag(card):
 	card_being_dragged = card
