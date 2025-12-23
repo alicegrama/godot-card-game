@@ -26,10 +26,13 @@ func _input(event):
 		if event.pressed:
 			var card = raycast_check_for_card()
 			if card:
-				start_drag(card)
+				pass
+				delete_card()
+				#start_drag(card)
 		else:
 			if card_being_dragged:
-				finish_drag()
+				pass
+				#finish_drag()
 
 func start_drag(card):
 	card_being_dragged = card
