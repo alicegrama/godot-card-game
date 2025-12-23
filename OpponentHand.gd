@@ -19,6 +19,7 @@ func _ready():
 		var new_card = card_scene.instantiate() as Node2D
 		$"../CardManager".add_child(new_card)
 		new_card.name = "Card"
+		new_card.toggle()
 		add_card_to_hand(new_card, DRAW_SPEED)
 
 # called when player stops dragging a card, and when new card drawn from deck

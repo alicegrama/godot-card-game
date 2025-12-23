@@ -3,15 +3,18 @@ extends Node2D
 const COLLISION_MASK_CARD = 1
 const COLLISION_MASK_CARD_SLOT = 2
 const RETURN_TO_HAND_SPEED = 0.15
+const CARD_SCENE_PATH = "res://Scenes/card.tscn"
 
 var card_being_dragged
 var screen_size
 var is_hovering_on_card
 var player_hand_reference
+var opponent_hand_reference
 
 func _ready() -> void:
 	screen_size = get_viewport_rect().size
 	player_hand_reference = $"../PlayerHand"
+	opponent_hand_reference = $"../OpponentHand"
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -25,14 +28,30 @@ func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			var card = raycast_check_for_card()
-			if card:
-				pass
-				delete_card()
+			if card == null:
+				return
+			if card in player_hand_reference.hand:
+				place_card(card)
+				
 				#start_drag(card)
+			elif card in opponent_hand_reference.hand:
+				card.toggle()
+			elif card == $"../Deck":
+				var card_scene = preload(CARD_SCENE_PATH)
+				var new_card = card_scene.instantiate() as Node2D
+				new_card.position = $"../Deck".position
+				$".".add_child(new_card)
+				new_card.name = "Card"
+				player_hand_reference.add_card_to_hand(new_card, 0.1)
 		else:
 			if card_being_dragged:
 				pass
 				#finish_drag()
+				
+func place_card(id):
+	#places card the discard place
+	player_hand_reference.animate_card_to_position(id, $"../CardSlot".position, 0.1)
+	player_hand_reference.remove_card_from_hand(id)
 
 func start_drag(card):
 	card_being_dragged = card
