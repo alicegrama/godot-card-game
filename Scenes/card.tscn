@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://cikq0f5468hgc" path="res://Assets/card_d13.png" id="1_kikvd"]
 [ext_resource type="Script" uid="uid://c3j54b0bypqqm" path="res://Scripts/Card.gd" id="1_rjlel"]
-[ext_resource type="Texture2D" uid="uid://dobivb8fv8wcg" path="res://Assets/card_deck.png" id="3_brehn"]
+[ext_resource type="Texture2D" uid="uid://bognghmfqb3rk" path="res://Assets/card_backside.png" id="3_brehn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rjlel"]
 size = Vector2(219, 324)
