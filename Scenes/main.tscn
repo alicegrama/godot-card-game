@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://cluyc22bda4y5"]
+[gd_scene load_steps=8 format=3 uid="uid://cluyc22bda4y5"]
 
 [ext_resource type="Script" uid="uid://bon2fqscvj6ib" path="res://Scripts/CardManager.gd" id="1_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://dsv2wif6rrygj" path="res://Scenes/card_slot.tscn" id="2_kry3j"]
 [ext_resource type="Script" uid="uid://b2fa7edhpbioa" path="res://Scripts/CardSlot.gd" id="3_21xkr"]
 [ext_resource type="Script" uid="uid://cau7ku3mdtw1x" path="res://Scripts/PlayerHand.gd" id="4_6bp64"]
+[ext_resource type="Script" uid="uid://08nq5ylv5xqy" path="res://Scripts/Deck.gd" id="5_21xkr"]
 [ext_resource type="Texture2D" uid="uid://dobivb8fv8wcg" path="res://Assets/card_deck.png" id="5_kry3j"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_21xkr"]
