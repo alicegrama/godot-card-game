@@ -9,15 +9,11 @@ const HAND_COUNT = 5
 const CARD_SPACING = CARD_WIDTH + 40
 
 var hand = [] # array of card names
-var card_manager
+@onready var card_manager = $"../CardManager"
 
 
 func _ready():
-	card_manager = get_parent().get_node("CardManager")
-	var card_scene = preload(CARD_SCENE_PATH)
-	for i in range(HAND_COUNT):
-		var new_card = card_scene.instantiate() as Node2D
-		$"../CardManager".draw_deck($".")
+	pass
 
 # called when player stops dragging a card, and when new card drawn from deck
 func add_card_to_hand(card, speed_to_move):

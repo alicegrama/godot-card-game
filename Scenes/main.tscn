@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://dobivb8fv8wcg" path="res://Assets/card_deck.png" id="5_kry3j"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_21xkr"]
-size = Vector2(200, 291)
+size = Vector2(235, 347)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_6bp64")
@@ -21,6 +21,12 @@ script = ExtResource("1_jjvhh")
 position = Vector2(924, 526)
 script = ExtResource("3_21xkr")
 
+[node name="Area2D2" type="Area2D" parent="CardSlot"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CardSlot/Area2D2"]
+position = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_21xkr")
+
 [node name="PlayerHand" type="Node2D" parent="."]
 position = Vector2(360, 890)
 script = ExtResource("4_6bp64")
@@ -30,7 +36,7 @@ position = Vector2(360, 50)
 script = ExtResource("5_21xkr")
 
 [node name="Deck" type="Node2D" parent="."]
-position = Vector2(150, 590)
+position = Vector2(150, 526)
 
 [node name="Sprite2D" type="Sprite2D" parent="Deck"]
 scale = Vector2(0.1, 0.1)
@@ -41,3 +47,107 @@ texture = ExtResource("5_kry3j")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Deck/Area2D"]
 position = Vector2(0, -1.5)
 shape = SubResource("RectangleShape2D_21xkr")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = 1206.0
+offset_top = 508.0
+offset_right = 1255.0
+offset_bottom = 539.0
+color = Color(1, 0.23921569, 0.19215687, 1)
+
+[node name="Button" type="Button" parent="."]
+offset_left = 1206.0
+offset_top = 508.0
+offset_right = 1255.0
+offset_bottom = 539.0
+text = "Done"
+
+[node name="Uno" type="Button" parent="."]
+visible = false
+offset_left = 500.0
+offset_top = 500.0
+offset_right = 600.0
+offset_bottom = 600.0
+text = "UNO"
+
+[node name="Points" type="Button" parent="."]
+visible = false
+offset_left = 700.0
+offset_top = 500.0
+offset_right = 800.0
+offset_bottom = 600.0
+text = "POINTS"
+
+[node name="Give" type="Button" parent="."]
+offset_left = 136.0
+offset_top = 416.0
+offset_right = 144.0
+offset_bottom = 424.0
+text = "Give"
+
+[node name="Take" type="Button" parent="."]
+z_index = 1
+offset_left = 120.0
+offset_top = 584.0
+offset_right = 165.0
+offset_bottom = 615.0
+text = "Take"
+
+[node name="Skip" type="Button" parent="."]
+offset_left = 472.0
+offset_top = 288.0
+offset_right = 513.0
+offset_bottom = 319.0
+text = "Skip"
+
+[node name="Suit" type="Button" parent="."]
+offset_left = 544.0
+offset_top = 304.0
+offset_right = 552.0
+offset_bottom = 312.0
+text = "Suit"
+
+[node name="Heart" type="Button" parent="."]
+visible = false
+offset_left = 544.0
+offset_top = 352.0
+offset_right = 594.0
+offset_bottom = 383.0
+text = "heart"
+
+[node name="Club" type="Button" parent="."]
+visible = false
+offset_left = 544.0
+offset_top = 400.0
+offset_right = 585.0
+offset_bottom = 431.0
+text = "club"
+
+[node name="Spade" type="Button" parent="."]
+visible = false
+offset_left = 544.0
+offset_top = 440.0
+offset_right = 599.0
+offset_bottom = 471.0
+text = "spade
+"
+
+[node name="Diamond" type="Button" parent="."]
+visible = false
+offset_left = 544.0
+offset_top = 480.0
+offset_right = 621.0
+offset_bottom = 511.0
+text = "diamond"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Uno" to="." method="_on_uno_pressed"]
+[connection signal="pressed" from="Points" to="." method="_on_points_pressed"]
+[connection signal="pressed" from="Give" to="." method="_on_give_pressed"]
+[connection signal="pressed" from="Take" to="." method="_on_take_pressed"]
+[connection signal="pressed" from="Skip" to="." method="_on_skip_pressed"]
+[connection signal="pressed" from="Suit" to="." method="_on_suit_pressed"]
+[connection signal="pressed" from="Heart" to="." method="_on_heart_pressed"]
+[connection signal="pressed" from="Club" to="." method="_on_club_pressed"]
+[connection signal="pressed" from="Spade" to="." method="_on_spade_pressed"]
+[connection signal="pressed" from="Diamond" to="." method="_on_diamond_pressed"]

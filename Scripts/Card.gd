@@ -32,7 +32,7 @@ var carddata = {
 	"s" : {1 : preload("res://Assets/cards/s_1.png"), 2: preload("res://Assets/cards/s_2.png"),
 			3 : preload("res://Assets/cards/s_3.png"), 4: preload("res://Assets/cards/s_4.png"),
 			5 : preload("res://Assets/cards/s_5.png"), 6: preload("res://Assets/cards/s_6.png"),
-			7 : preload("res://Assets/cards/h_7.png"), 8: preload("res://Assets/cards/s_8.png"),
+			7 : preload("res://Assets/cards/s_7.png"), 8: preload("res://Assets/cards/s_8.png"),
 			9 : preload("res://Assets/cards/s_9.png"), 10: preload("res://Assets/cards/s_10.png"),
 			11 : preload("res://Assets/cards/s_11.png"), 12: preload("res://Assets/cards/s_12.png"),
 			13 : preload("res://Assets/cards/s_13.png")}
@@ -53,13 +53,25 @@ func get_suit_number():
 	return [suit, number]
 
 func _on_area_2d_mouse_entered() -> void:
+	if $"../..".playerstate == "action":
+		$Take.visible = true
+		$Give.visible = true
 	emit_signal("hovered", self)
 
 
 func _on_area_2d_mouse_exited() -> void:
+	$Take.visible = false
+	$Give.visible = false
 	emit_signal("hovered_off", self)
 	
 func toggle():
 	#hides the card or lets them show.
 	$CardImageBack.visible = !$CardImageBack.visible
 		
+
+
+func _on_take_pressed() -> void:
+	$"..".take($".", 1)
+
+func _on_give_pressed() -> void:
+	$"..".take($".", 0)

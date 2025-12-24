@@ -20,7 +20,7 @@ func _ready() -> void:
 	player_hand_reference = $"../PlayerHand"
 	opponent_hand_reference = $"../OpponentHand"
 	
-	for i in range(1, 13):
+	for i in range(1, 14):
 		for j in ["h", "c", "d", "s"]:
 			deck.append([j, i])
 	
@@ -37,8 +37,8 @@ func draw_deck(hand):
 	$".".add_child(new_card)
 	new_card.name = "Card"
 	hand.add_card_to_hand(new_card, 0.1)
-	
-	return new_card
+	if hand == opponent_hand_reference:
+		new_card.toggle()
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -53,19 +53,23 @@ func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			var card = raycast_check_for_card()
-			if card == null:
+			if card == null or !interaction:
 				return
 			if card in player_hand_reference.hand:
-				if card in $"..".playablecards:
+				#check if action allowed
+				if card in $"..".playablecards and (($"..".state == "uno" and $"..".playerstate == "card") or $"..".state == "points"):
 					print($"..".playablecards)
 					place_card(card, player_hand_reference)
-					$"..".opponent_turn()
-					#start_drag(card)
+					#if it has no rule add a rule?
+					if $"..".rules[[card.suit,card.number]] == null or $"..".rules[[card.suit,card.number]] == 0:
+						$"..".playerstate = "action"
+					else:
+						$"..".take_action(card.suit, card.number, 1)
 			elif card in opponent_hand_reference.hand:
 				card.toggle()
-			elif card == $"../Deck":
-				draw_deck(player_hand_reference)
-				$"..".opponent_turn()
+			elif card == $"../CardSlot" and $"../CardSlot".card == null and $"..".state == "setup":
+				draw_deck($"../CardSlot")
+				$"..".opponentsetup()
 		else:
 			if card_being_dragged:
 				pass
@@ -166,3 +170,14 @@ func get_card_with_highest_z_index(cards):
 			highest_z_card = current_card
 			highest_z_index = current_card.z_index
 	return highest_z_card
+
+func take(card, player):
+	#take a card from another hand
+	if player:
+		#player has taken card
+		player_hand_reference.add_card_to_hand(card, RETURN_TO_HAND_SPEED)
+		opponent_hand_reference.remove_card_from_hand(card)
+		$"..".turn_finished.emit()
+	else:
+		opponent_hand_reference.add_card_to_hand(card, RETURN_TO_HAND_SPEED)
+		player_hand_reference.remove_card_from_hand(card)

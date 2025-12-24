@@ -25,5 +25,23 @@ visible = false
 scale = Vector2(0.11126797, 0.11126797)
 texture = ExtResource("3_brehn")
 
+[node name="Take" type="Button" parent="."]
+visible = false
+offset_left = -80.0
+offset_top = 128.0
+offset_right = -35.0
+offset_bottom = 159.0
+text = "Take"
+
+[node name="Give" type="Button" parent="."]
+visible = false
+offset_left = -80.0
+offset_top = -160.0
+offset_right = -40.0
+offset_bottom = -129.0
+text = "give"
+
 [connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
 [connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
+[connection signal="pressed" from="Take" to="." method="_on_take_pressed"]
+[connection signal="pressed" from="Give" to="." method="_on_give_pressed"]
