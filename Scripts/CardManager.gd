@@ -57,11 +57,17 @@ func _input(event):
 			if card == null or !interaction:
 				return
 			if card in player_hand_reference.hand:
+				if $"..".state == "points":
+					place_card(card, player_hand_reference)
+					draw_deck(player_hand_reference)
+					#add card to history
+					$"..".history.append([card.suit, card.number])
+					$"..".turn_finished.emit()
+					return
 				#check if action allowed
-				if (($"..".state == "uno" and $"..".playerstate == "card") or $"..".state == "points"):
+				if (($"..".state == "uno" and $"..".playerstate == "card")):
 					if card not in $"..".playablecards:
 						$"..".change_rules(card.number, card.suit, $"../CardSlot".card.number, $"../CardSlot".card.suit)
-					print($"..".playablecards)
 					place_card(card, player_hand_reference)
 					if len(player_hand_reference.hand) == 0:
 						#game is over

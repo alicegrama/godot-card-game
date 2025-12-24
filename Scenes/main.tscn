@@ -143,6 +143,23 @@ offset_right = 781.0
 offset_bottom = 567.0
 text = "diamond"
 
+[node name="OpScore" type="Label" parent="."]
+visible = false
+offset_left = 368.0
+offset_top = 433.0
+offset_right = 490.0
+offset_bottom = 482.0
+text = "Score Opp: 0"
+
+[node name="PlayScore" type="Label" parent="."]
+visible = false
+offset_left = 368.0
+offset_top = 496.0
+offset_right = 481.0
+offset_bottom = 545.0
+text = "Score Player: 0
+"
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Uno" to="." method="_on_uno_pressed"]
 [connection signal="pressed" from="Points" to="." method="_on_points_pressed"]

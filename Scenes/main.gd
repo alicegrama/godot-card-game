@@ -19,9 +19,10 @@ var globrules = [2, 3]
 #2: suit on suit -> 1: color on color -> 0:nothing
 #3: number on number -> 2: number => n or 1: number <= number -> 0: nothing
 #1: numbers have same rules -> 0: number-suit a rule.
-var rules = {} 
+var rules = {}
 #0 = nothing, 1 = take a card, 2 = your turn, 3 = change suit, 
 #4 = give/take card of hand, 5 = look at card
+#POINTS it is the basevalue
 
 #we model the player to get a appropiate bot, reflecting the creation of the player
 var bot = {
@@ -33,6 +34,30 @@ var bot = {
 }
 
 signal turn_finished
+
+#VARIABLES FOR THE POINTS GAME
+var playerscore = 0
+var opponentscore = 0
+
+var pointrules = [[0]]
+# 1 sandwich
+# 2 chain
+# 3 sequence
+# 4 discard
+# 5 swap J
+# 6 Greed 2
+# 7 even odd
+# 8 low cards
+# 9 face cards
+# 10 ranks
+# 11 suits
+# 12 ying yang
+# 13 minefield
+# 14 eclips
+# 15 gamble
+# 0 normal values
+
+var history = []
  
 func get_color(suit):
 	if suit == 's':
@@ -118,11 +143,16 @@ func player_turn():
 		skip = false
 		turn_finished.emit()
 		return
-	playablecards = playable(playerhand.hand)
-	#show the playable cards
-	for i in playablecards:
-		i.move_forward()
 	cardmanager.interaction = true
+	if state == "uno":
+		playablecards = playable(playerhand.hand)
+		#show the playable cards
+		for i in playablecards:
+			i.move_forward()
+	else:
+		#for points 
+		check_rule_decay()
+		
 	
 func random_choice(arr, prob):
 	#take a random choice of array with probababilities of prob
@@ -136,6 +166,45 @@ func random_choice(arr, prob):
 		if p < acu:
 			return arr[i]
 	return null
+	
+func uno_decision(card):
+	#the bot decides what to do in the round
+	#action with card
+	var rule = 0
+	if rules[[card.suit, card.number]] == 0:
+		var probs = 0.02 + (0.01 * bot["rule_changer"]) + (0.01 * bot["aggression"]) - (0.03 * bot["rule_pressure"])
+		var inf = 0.02 + (0.01 * bot["rule_changer"]) + (0.01 * bot["information"]) - (0.03 * bot["rule_pressure"])
+		if probs < 0:
+			probs = 0
+		rule = random_choice(range(6), [1-(probs*4)-inf, probs, probs, probs, probs, inf])
+		add_rule(card.suit, card.number, rule)
+	elif rules[[card.suit, card.number]] == null:
+		var probs = 0.03 + (0.02 * bot["rule_changer"]) + (0.02 * bot["aggression"]) - (0.03 * bot["rule_pressure"])
+		var inf = 0.03 + (0.02 * bot["rule_changer"]) + (0.02 * bot["information"]) - (0.03 * bot["rule_pressure"])
+		if probs < 0:
+			probs = 0
+		rule = random_choice(range(6), [1-(probs*4)-inf, probs, probs, probs, probs, inf])
+		add_rule(card.suit, card.number, rule)
+	else:
+		var probs = 0.02 + (0.02 * bot["rule_changer"]) + (0.02 * bot["aggression"])
+		if randf() < probs:
+			var inf = 0.02 + (0.02 * bot["rule_changer"]) + (0.02 * bot["information"])
+			if probs < 0:
+				probs = 0
+			rule = random_choice(range(6), [1-(probs*4)-inf, probs, probs, probs, probs, inf])
+			add_rule(card.suit, card.number, rule)
+	take_action(card.suit, card.number, false)
+	
+	#decrease bots emotions
+	for i in bot:
+		if i == 'rule_pressure':
+			var nrules = 0
+			for x in rules.values():
+				if x != 0 and x != null:
+					nrules += 1
+			bot[i] = nrules/len(rules)
+		else:
+			bot[i] += 0.03* -bot[i]
 
 func opponent_turn():
 	turn = 1
@@ -145,7 +214,12 @@ func opponent_turn():
 		return
 	cardmanager.interaction = false
 	await get_tree().create_timer(1.0).timeout
-	var card = playable(opponenthand.hand).pick_random()
+	
+	var card = 0
+	if state == "uno":
+		card = playable(opponenthand.hand).pick_random()
+	else:
+		card = opponenthand.hand.pick_random()
 	if card == null:
 		#draw a card
 		card = cardmanager.draw_deck(opponenthand)
@@ -158,42 +232,14 @@ func opponent_turn():
 			print("gameover")
 			return
 		
-		#action with card
-		var rule = 0
-		if rules[[card.suit, card.number]] == 0:
-			var probs = 0.02 + (0.01 * bot["rule_changer"]) + (0.01 * bot["aggression"]) - (0.03 * bot["rule_pressure"])
-			var inf = 0.02 + (0.01 * bot["rule_changer"]) + (0.01 * bot["information"]) - (0.03 * bot["rule_pressure"])
-			if probs < 0:
-				probs = 0
-			rule = random_choice(range(6), [1-(probs*4)-inf, probs, probs, probs, probs, inf])
-			add_rule(card.suit, card.number, rule)
-		elif rules[[card.suit, card.number]] == null:
-			var probs = 0.03 + (0.02 * bot["rule_changer"]) + (0.02 * bot["aggression"]) - (0.03 * bot["rule_pressure"])
-			var inf = 0.03 + (0.02 * bot["rule_changer"]) + (0.02 * bot["information"]) - (0.03 * bot["rule_pressure"])
-			if probs < 0:
-				probs = 0
-			rule = random_choice(range(6), [1-(probs*4)-inf, probs, probs, probs, probs, inf])
-			add_rule(card.suit, card.number, rule)
-		else:
-			var probs = 0.02 + (0.02 * bot["rule_changer"]) + (0.02 * bot["aggression"])
-			if randf() < probs:
-				var inf = 0.02 + (0.02 * bot["rule_changer"]) + (0.02 * bot["information"])
-				if probs < 0:
-					probs = 0
-				rule = random_choice(range(6), [1-(probs*4)-inf, probs, probs, probs, probs, inf])
-				add_rule(card.suit, card.number, rule)
-		take_action(card.suit, card.number, false)
-	
-	#decrease bots emotions
-	for i in bot:
-		if i == 'rule_pressure':
-			var nrules = 0
-			for x in rules.values():
-				if x != 0 and x != null:
-					nrules += 1
-			bot[i] = nrules/len(rules)
-		else:
-			bot[i] += 0.03* -bot[i]
+	if state == "uno":
+		uno_decision(card)
+	else:
+		cardmanager.draw_deck(opponenthand)
+		history.append([card.suit, card.number])
+		opponentscore += pointscore()
+		$OpScore.text = "Score Opp: %d" % [opponentscore]
+		
 	turn_finished.emit()
 	
 func playersetup():
@@ -256,10 +302,23 @@ func setup():
 	
 func _on_turn_finished():
 	if turn == 0:
+		if state == "points":
+			#make rules and points for players turn
+			var prob = 0
+			if len(pointrules) < 5:
+				prob = 0.8
+			else:
+				prob = 0.2
+			generate_rule(prob)
+			#calculate new score
+			playerscore += pointscore()
+			$PlayScore.text = "Score Player: %d" % [playerscore]
 		opponent_turn()
+
 	else:
 		round += 1
 		player_turn()
+			
 
 func start_game():
 	setup()
@@ -342,7 +401,9 @@ func _on_points_pressed() -> void:
 	state = "points"
 	$Uno.visible = false
 	$Points.visible = false
-	#TODO here need to start points game
+	$OpScore.visible = true
+	$PlayScore.visible = true
+	player_turn()
 	
 func add_rule(suit, number, rule):
 	if rules[[suit, number]] not in [null, 0]:
@@ -417,3 +478,248 @@ func _on_diamond_pressed() -> void:
 	
 func end_game():
 	state = "done"
+	
+#EVERYTHING EXTRA FOR THE POINTGAME
+
+func check_rule_decay():
+	var nrules = len(pointrules) 
+	var decay_prob = max(0, (nrules-3)*0.1)
+	if pointrules and randf() < decay_prob:
+		#remove a rule
+		pointrules.pop_front()
+		
+func generate_rule(prob):
+	"""add a rule given a probability"""
+	var nrules = len(pointrules)
+	# Logic 60% Justification / 40% Complex
+	if randf() < prob:
+		if randf() < 0.6:
+			create_justification_rule()
+			if len(pointrules) == nrules:
+				create_complex_rule()
+		else:
+			create_complex_rule()
+			if len(pointrules) == nrules:
+				create_justification_rule()
+
+func create_justification_rule():
+	"""Creates rules based on the play. 
+	HIGH PRIORITY: Returns immediately. 
+	MEDIUM/LOW PRIORITY: Added to a pool and chosen by WEIGHT."""
+	
+	var weighted_candidates = []
+	var probs = []
+	
+	#sandwhich detection
+	if len(history) >= 3:
+		var card_minus2 = history[-3]
+		if history[-1][1] == card_minus2[1]:
+			if not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 1):
+				pointrules.append([1])
+				return
+	#sequence detection
+	if len(history) >= 2:
+		if abs(history[-1][1] - history[-2][1]) == 1:
+			var is_chain = false
+			if len(history) >= 3:
+				if abs(history[-2][1] - history[-3][1]) == 1:
+					is_chain = true
+			if is_chain and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 2):
+				pointrules.append([2])
+				return
+			elif not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 3):
+				pointrules.append([3])
+				return
+	
+	if history[-1][1] == 7 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 4):
+		probs.append(40)
+		weighted_candidates.append([4])
+	if history[-1][1] == 11 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 5):
+		weighted_candidates.append([5])
+		probs.append(30)
+	if history[-1][1] == 2 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 6):
+		weighted_candidates.append([6])
+		probs.append(30)
+	if not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 7):
+		weighted_candidates.append([7, (history[-1][1]%2) == 1])
+		probs.append(15)
+	if history[-1][1] <= 5 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 8):
+		weighted_candidates.append([8])
+		probs.append(15)
+	if history[-1][1] >= 11 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 9):
+		weighted_candidates.append([9])
+		probs.append(10)
+	if not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 10):
+		weighted_candidates.append([10, history[-1][1]])
+		probs.append(20)
+	if [11, history[-1][0]] not in pointrules and len(pointrules.filter(func(arr): return arr.size() > 0 and arr[0] == 11)) <2:
+		weighted_candidates.append([11, history[-1][0]])
+		probs.append(10)
+	if weighted_candidates:
+		var total = 0
+		for i in probs:
+			total += i
+		for i in range(len(probs)):
+			probs[i] = float(probs[i])/float(total)
+		print("sanity check")
+		print(probs)
+		pointrules.append(random_choice(weighted_candidates, probs))
+		
+func create_complex_rule():
+	var weighted_candidates = []
+	var probs = []
+	if [12] not in pointrules:
+		var gsuit = ["h", "c", "d", "s"].pick_random()
+		var gnumber = randi() % 13 +1
+		var dsuit = ["h", "c", "d", "s"].pick_random()
+		var dnumber = randi() % 13 +1
+		weighted_candidates.append([12, gsuit, gnumber, dsuit, dnumber])
+		probs.append(30)
+	if [13] not in pointrules:
+		var mine_val = randi() % 13 +1
+		var offset = randi() % 4
+		var start = mine_val - offset
+		var end = mine_val + offset
+		if start < 2:
+			end += 2-start
+			start = 2
+		if end > 13:
+			start = end - 13
+			end = 13
+			
+		weighted_candidates.append([13, mine_val, start, end])
+		probs.append(30)
+	if [14] not in pointrules:
+		weighted_candidates.append([14])
+		probs.append(30)
+	if [15] not in pointrules:
+		weighted_candidates.append([15])
+		probs.append(30)
+		
+	if weighted_candidates:
+		var total = 0
+		for i in probs:
+			total += i
+		for i in range(len(probs)):
+			probs[i] = float(probs[i])/float(total)
+		print("sanity check2")
+		print(probs)
+		pointrules.append(random_choice(weighted_candidates, probs))
+		
+func pointscore():
+	#returns value of top card
+	var score = 0
+	print(pointrules)
+	for i in pointrules:
+		if i[0] == 0:
+			score += value_rule()
+		if i[0] == 1:
+			score += sandwich_rule()
+		if i[0] == 1:
+			score += chain_rule()
+		if i[0] == 2:
+			score += sequence_rule()
+		if i[0] == 7:
+			score += even_odd_rule(i[1])
+		if i[0] == 8:
+			score += micro_rule()
+		if i[0] == 9:
+			score += face_rule()
+		if i[0] == 10:
+			score += rank_rule(i[1])
+		if i[0] == 11:
+			score += suit_rule(i[1])
+		if i[0] == 12:
+			score += yingyang_rule(i[1], i[2], i[3], i[4])
+		if i[0] == 13:
+			score += minefield_rule(i[1], i[2], i[3])
+		if i[0] == 14:
+			score += eclips_rule()
+		if i[0] == 15:
+			score += gamble_rule() 
+	return score
+	
+func value_rule():
+	return history[-1][1]
+
+func sandwich_rule():
+	if len(history) >= 3 and history[-1][1] == history[-3][1]:
+		#current rank is the same as two back
+		return 30 + history[-1][1]
+	return 0
+
+func chain_rule():
+	if len(history) >= 3:
+		var card = history[-1]
+		var prev = history[-2]
+		var pre_prev = history[-3]
+		if abs(prev[1] - pre_prev[1]) == 1 and abs(card[1] - prev[1]) == 1:
+			return 50
+	return 0
+		
+func sequence_rule():
+	if len(history) >= 3:
+		var card = history[-1]
+		var prev = history[-2]
+		if abs(card[1] - prev[1]) == 1:
+			return 20
+	return 0
+		
+func destruct_rule():
+	pass
+
+func swap_rule():
+	pass #swap hands
+	
+func draw_rule(hand):
+	if history[-1] == 2:
+		cardmanager.draw_card(hand)
+		
+func even_odd_rule(even):
+	if history[-1][1] % 2 == int(even):
+		return 8
+	return 0
+
+func micro_rule():
+	if history[-1][1] <= 5 and history[-1][1] > 1 :
+		return 15
+	return 0
+	
+func face_rule():
+	if history[-1][1] >= 11:
+		return 10
+	return 0
+	
+func rank_rule(rank):
+	if history[-1][1] == rank:
+		return 25
+	return 0
+
+func suit_rule(suit):
+	if history[-1][0] == suit:
+		return 25
+	return 0
+	
+func yingyang_rule(gsuit, gnumber, dsuit, dnumber):
+	if history[-1][0] == gsuit and history[-1][1] == gnumber:
+		return 100
+	if history[-1][0] == dsuit and history[-1][1] == dnumber:
+		return -100
+	return 0
+
+func minefield_rule(number, lower, upper):
+	if history[-1][1] == number:
+		return -50
+	if lower <= history[-1][1] and history[-1][1] <= upper:
+		return 20
+	return 0
+	
+func eclips_rule():
+	return 16 - (2 * history[-1][1])
+	
+func gamble_rule():
+	if history[-1][1] > 10 :
+		return 15
+	if history[-1][1] < 6:
+		return -10
+	return 0
