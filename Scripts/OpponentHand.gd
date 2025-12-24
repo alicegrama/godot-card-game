@@ -46,6 +46,18 @@ func calculate_card_position(index):
 func animate_card_to_position(card, new_position, speed_to_move):
 	var tween = get_tree().create_tween()
 	tween.tween_property(card, "position", new_position, speed_to_move)
+	
+func toggle_take(visible):
+	for i in hand:
+		i.toggle_take(visible)
+
+func toggle_give(visible):
+	for i in hand:
+		i.toggle_give(visible)
+		
+func toggle_look(visible):
+	for i in hand:
+		i.toggle_look(visible)
 
 
 # removes a card from the hand and updates remaining card positions

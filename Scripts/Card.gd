@@ -53,25 +53,43 @@ func get_suit_number():
 	return [suit, number]
 
 func _on_area_2d_mouse_entered() -> void:
-	if $"../..".playerstate == "action":
-		$Take.visible = true
-		$Give.visible = true
 	emit_signal("hovered", self)
 
 
 func _on_area_2d_mouse_exited() -> void:
-	$Take.visible = false
-	$Give.visible = false
 	emit_signal("hovered_off", self)
 	
 func toggle():
 	#hides the card or lets them show.
 	$CardImageBack.visible = !$CardImageBack.visible
+	
+func all_off():
+	#remove all buttons of the card
+	toggle_give(false)
+	toggle_take(false)
+	toggle_look(false)
 		
-
-
+func toggle_take(visible):
+	$Take.visible = visible
+	
+func toggle_give(visible):
+	$Give.visible = visible
+	
+func toggle_look(visible):
+	$Look.visible = visible
+	
 func _on_take_pressed() -> void:
 	$"..".take($".", 1)
 
 func _on_give_pressed() -> void:
 	$"..".take($".", 0)
+
+
+func _on_look_pressed() -> void:
+	toggle()
+	await get_tree().create_timer(2.0).timeout
+	toggle()
+	$"../".looked()
+	
+func move_forward():
+	position.y -= 50

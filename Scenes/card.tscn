@@ -41,7 +41,16 @@ offset_right = -40.0
 offset_bottom = -129.0
 text = "give"
 
+[node name="Look" type="Button" parent="."]
+visible = false
+offset_left = 16.0
+offset_top = 128.0
+offset_right = 62.0
+offset_bottom = 159.0
+text = "Look"
+
 [connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
 [connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
 [connection signal="pressed" from="Take" to="." method="_on_take_pressed"]
 [connection signal="pressed" from="Give" to="." method="_on_give_pressed"]
+[connection signal="pressed" from="Look" to="." method="_on_look_pressed"]

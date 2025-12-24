@@ -11,8 +11,7 @@ var is_hovering_on_card
 var player_hand_reference
 var opponent_hand_reference
 
-var deck = [] 
-var discard = []
+var deck = []
 var interaction = false
 
 func _ready() -> void:
@@ -26,7 +25,9 @@ func _ready() -> void:
 	
 func draw_deck(hand):
 	#draw a card from the deck returns the card
-	#add empty deck
+	if not deck:
+		return
+		
 	var sn = deck.pick_random()
 	deck.erase(sn)
 	
@@ -57,16 +58,21 @@ func _input(event):
 				return
 			if card in player_hand_reference.hand:
 				#check if action allowed
-				if card in $"..".playablecards and (($"..".state == "uno" and $"..".playerstate == "card") or $"..".state == "points"):
+				if (($"..".state == "uno" and $"..".playerstate == "card") or $"..".state == "points"):
+					if card not in $"..".playablecards:
+						$"..".change_rules(card.number, card.suit, $"../CardSlot".card.number, $"../CardSlot".card.suit)
 					print($"..".playablecards)
 					place_card(card, player_hand_reference)
+					if len(player_hand_reference.hand) == 0:
+						#game is over
+						print("winning streak")
+						$"..".end_game()
+						return
 					#if it has no rule add a rule?
 					if $"..".rules[[card.suit,card.number]] == null or $"..".rules[[card.suit,card.number]] == 0:
-						$"..".playerstate = "action"
+						$"..".toggle_actions(true)
 					else:
 						$"..".take_action(card.suit, card.number, 1)
-			elif card in opponent_hand_reference.hand:
-				card.toggle()
 			elif card == $"../CardSlot" and $"../CardSlot".card == null and $"..".state == "setup":
 				draw_deck($"../CardSlot")
 				$"..".opponentsetup()
@@ -79,9 +85,10 @@ func place_card(id, hand):
 	#places card the discard place
 	hand.animate_card_to_position(id, $"../CardSlot".position, 0.1)
 	hand.remove_card_from_hand(id)
-	discard.append(id.get_suit_number())
+	id.all_off()
 	if $"../CardSlot".card != null:
 		await get_tree().create_timer(0.06).timeout
+		deck.append([$"../CardSlot".card.suit, $"../CardSlot".card.number])
 		$"../CardSlot".card.queue_free()
 		#make the id card move to the background
 	$"../CardSlot".card = id
@@ -177,7 +184,26 @@ func take(card, player):
 		#player has taken card
 		player_hand_reference.add_card_to_hand(card, RETURN_TO_HAND_SPEED)
 		opponent_hand_reference.remove_card_from_hand(card)
-		$"..".turn_finished.emit()
+		#if new action add rule
+		if $"..".turn == 0:
+			print("take added")
+			$"..".add_rule($"../CardSlot".card.suit, $"../CardSlot".card.number, 4)
+			$"..".toggle_actions(false)
+			$"..".turn_finished.emit()
+		card.toggle()
 	else:
+		if $"..".turn == 0:
+			$"..".add_rule($"../CardSlot".card.suit, $"../CardSlot".card.number, 5)
+			$"..".toggle_actions(false)
+			$"..".turn_finished.emit()
 		opponent_hand_reference.add_card_to_hand(card, RETURN_TO_HAND_SPEED)
 		player_hand_reference.remove_card_from_hand(card)
+		#make sure see the correct space
+		card.toggle()
+		card.toggle_take(false)
+		
+func looked():
+	#player has looked at a card
+	$"..".add_rule($"../CardSlot".card.suit, $"../CardSlot".card.number, 6)
+	$"..".toggle_actions(false)
+	$"..".turn_finished.emit()

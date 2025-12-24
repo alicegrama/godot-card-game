@@ -55,3 +55,11 @@ func remove_card_from_hand(card_name):
 	if card in hand:
 		hand.erase(card)
 		update_hand_positions(UPDATE_CARD_POS_SPEED)
+		
+func toggle_take(visible):
+	for i in hand:
+		i.toggle_take(visible)
+
+func toggle_give(visible):
+	for i in hand:
+		i.toggle_give(visible)
