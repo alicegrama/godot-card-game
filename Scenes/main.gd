@@ -561,8 +561,6 @@ func create_justification_rule():
 			total += i
 		for i in range(len(probs)):
 			probs[i] = float(probs[i])/float(total)
-		print("sanity check")
-		print(probs)
 		pointrules.append(random_choice(weighted_candidates, probs))
 		
 func create_complex_rule():
@@ -602,41 +600,62 @@ func create_complex_rule():
 			total += i
 		for i in range(len(probs)):
 			probs[i] = float(probs[i])/float(total)
-		print("sanity check2")
-		print(probs)
 		pointrules.append(random_choice(weighted_candidates, probs))
 		
 func pointscore():
 	#returns value of top card
+	#and now also updates the rules on the label
 	var score = 0
+	var textrules = ""
 	print(pointrules)
 	for i in pointrules:
 		if i[0] == 0:
+			textrules += "\n Standard Value: Points = Card value (2-14)."
 			score += value_rule()
 		if i[0] == 1:
+			textrules += "\n Sandwich: Sandwich (e.g., 5-K-5) -> Steal middle value + 30 pts."
 			score += sandwich_rule()
-		if i[0] == 1:
-			score += chain_rule()
 		if i[0] == 2:
+			textrules += "\n Chain Reaction: Extend existing sequence -> +50 pts."
+			score += chain_rule()
+		if i[0] == 3:
+			textrules += "\n Sequence: Consecutive -> +20 pts."
 			score += sequence_rule()
+		if i[0] == 4:
+			textrules += "\n Destroyer: 7 removes a card."
+		if i[0] == 5:
+			textrules += "\n The Trickster: J swaps hands"
+		if i[0] == 6:
+			textrules += "\n Greed: Playing a 2 gives you an extra card immediately (hand size increases)."
 		if i[0] == 7:
+			if i[1]:
+				textrules += "\n Law of evens: even cards give +8 pts."
 			score += even_odd_rule(i[1])
 		if i[0] == 8:
+			textrules += "\n Micro-Power: Low cards (2-5) give +15 pts."
 			score += micro_rule()
 		if i[0] == 9:
+			textrules += "\n Royal Court: Face cards give +10 pts."
 			score += face_rule()
 		if i[0] == 10:
+			textrules += "\n Obsession %d: Playing '%d' gives +25 pts." %[i[1], i[1]]
 			score += rank_rule(i[1])
 		if i[0] == 11:
+			textrules += "\n Law of %s: %s cards: +10 pts." %[i[1], i[1]]
 			score += suit_rule(i[1])
 		if i[0] == 12:
+			textrules += "\n Universal Balance: There is a HIDDEN card that is God (+100 pts) and another Devil (-100 pts)."
 			score += yingyang_rule(i[1], i[2], i[3], i[4])
 		if i[0] == 13:
+			textrules += "\n Range $d-%d gives +20 pts... But there is a MINE!" % [i[2],i[3]]
 			score += minefield_rule(i[1], i[2], i[3])
 		if i[0] == 14:
+			textrules += "\n SOLAR ECLIPSE! The hierarchy is inverted: 2 is the strongest (Ace), Ace is the weakest (2)."
 			score += eclips_rule()
 		if i[0] == 15:
+			textrules += "\n Gambling:Face cards +15, Low cards -10."
 			score += gamble_rule() 
+	$Rules.text = textrules
 	return score
 	
 func value_rule():
