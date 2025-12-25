@@ -174,6 +174,14 @@ offset_bottom = 345.0
 text = "ending
 "
 
+[node name="Remove" type="Button" parent="."]
+visible = false
+offset_left = 395.0
+offset_top = 441.0
+offset_right = 504.0
+offset_bottom = 472.0
+text = "Remove Rule"
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Uno" to="." method="_on_uno_pressed"]
 [connection signal="pressed" from="Points" to="." method="_on_points_pressed"]
@@ -185,3 +193,4 @@ text = "ending
 [connection signal="pressed" from="Club" to="." method="_on_club_pressed"]
 [connection signal="pressed" from="Spade" to="." method="_on_spade_pressed"]
 [connection signal="pressed" from="Diamond" to="." method="_on_diamond_pressed"]
+[connection signal="pressed" from="Remove" to="." method="_on_remove_pressed"]

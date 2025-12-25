@@ -18,7 +18,6 @@ var globrules = [2, 3]
 #0, 0 = everythin in play
 #2: suit on suit -> 1: color on color -> 0:nothing
 #3: number on number -> 2: number => n or 1: number <= number -> 0: nothing
-#1: numbers have same rules -> 0: number-suit a rule.
 var rules = {}
 #0 = nothing, 1 = take a card, 2 = your turn, 3 = change suit, 
 #4 = give/take card of hand, 5 = look at card
@@ -85,6 +84,70 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 	
+func get_rule(name, rule):
+	#given a name suit number or only number gives rule string
+	var text = ""
+	if rule == 1:
+		text += "%s: Give a card from the deck.\n"% [name]
+	if rule == 2:
+		text += "%s: Skip turn.\n"% [name]
+	if rule == 3:
+		text += "%s: Change suit.\n"% [name]
+	if rule == 4:
+		text += "%s: Take a card from opponents hand.\n"% [name]
+	if rule == 5:
+		text += "%s: Give a card of your hand.\n"% [name]
+	if rule == 6:
+		text += "%s: Look at a card of the opponent.\n"% [name]
+	return text
+	
+func get_cardname(number):
+	#gives card name according to the number
+	if number == 1:
+		return 'A'
+	if number < 11:
+		return str(number)
+	if number == 11:
+		return 'J'
+	if number == 12:
+		return 'Q'
+	else:
+		return 'K'
+	
+func display_rules():
+	"""display the rules"""
+	var placetext = "" #text that explains the placement rules
+	var ruletext = ""
+	#Globrules:
+	if globrules == [0,0]:
+		placetext += "Everythin goes\n"
+	if globrules[0] == 2:
+		placetext += "Suit on Suit\n"
+	elif globrules[0] == 1:
+		placetext += "Color on Color\n"
+	if globrules[1] == 3:
+		placetext += "Number on Number\n"
+	elif globrules[1] == 2:
+		placetext += "Numbers greater\n"
+	elif globrules[1] == 1:
+		placetext += "Numbers smaller\n"
+		
+	for i in range(1, 14):
+		var rule = []
+		var name = ""
+		for j in ["h", "c", "d", "s"]:
+			rule.append(rules[[j, i]])
+		if len(rule.filter(func(element): return element == rule[0])) == 4:
+			name = get_cardname(i)
+			ruletext += get_rule(name, rule[0])
+		else:
+			for k in ["h", "c", "d", "s"]:
+				name = "%s %s"%[get_cardname(i), k]
+				ruletext += get_rule(name, rule[0])
+
+	$Rules.text = ruletext
+	$Ending.text = placetext
+
 func check_uno(prevsuit, prevnumber, suit, number):
 	#returns true if it can be played in current rules
 	if globrules[0] == 0 and globrules[1] == 0:
@@ -106,6 +169,7 @@ func check_uno(prevsuit, prevnumber, suit, number):
 			return true
 			
 func change_rules(number, suit, prevnumber, prevsuit):
+	bot["experiment"] += 0.2 * (1-bot["experiment"])
 	if globrules[0] == 2:
 		if get_color(suit) == get_color(prevsuit):
 			print("colors now")
@@ -170,6 +234,7 @@ func random_choice(arr, prob):
 	return null
 	
 func uno_decision(card):
+	print(bot["aggression"])
 	#the bot decides what to do in the round
 	#action with card
 	var rule = 0
@@ -195,6 +260,10 @@ func uno_decision(card):
 				probs = 0
 			rule = random_choice(range(6), [1-(probs*4)-inf, probs, probs, probs, probs, inf])
 			add_rule(card.suit, card.number, rule)
+		elif randf() < bot["rule_pressure"] - (0.1 * bot["aggression"]):
+			#remove rule
+			for i in ["h", "c", "d", "s"]:
+				rules[[i, card.number]] = 0
 	take_action(card.suit, card.number, false)
 	
 	#decrease bots emotions
@@ -206,7 +275,7 @@ func uno_decision(card):
 					nrules += 1
 			bot[i] = nrules/len(rules)
 		else:
-			bot[i] += 0.03* -bot[i]
+			bot[i] += 0.03* (0.4-bot[i])
 
 func opponent_turn():
 	turn = 1
@@ -220,23 +289,23 @@ func opponent_turn():
 	var card = 0
 	if state == "uno":
 		card = playable(opponenthand.hand).pick_random()
+		if card == null:
+			#draw a card
+			card = cardmanager.draw_deck(opponenthand)
+		else:
+			card.toggle()
+			await cardmanager.place_card(card, opponenthand)
+			uno_decision(card)
+			
+			if len(opponenthand.hand) == 0:
+				#game is over
+				print("gameover")
+				return
 	else:
+		#points
 		card = opponenthand.hand.pick_random()
-	if card == null:
-		#draw a card
-		card = cardmanager.draw_deck(opponenthand)
-	else:
 		card.toggle()
 		await cardmanager.place_card(card, opponenthand)
-		
-		if len(opponenthand.hand) == 0:
-			#game is over
-			print("gameover")
-			return
-		
-	if state == "uno":
-		uno_decision(card)
-	else:
 		cardmanager.draw_deck(opponenthand)
 		history.append([card.suit, card.number])
 		#special rules
@@ -278,7 +347,7 @@ func opponentsetup():
 	await get_tree().create_timer(1.0).timeout
 	var length = len(opponenthand.hand)
 	#Smaller than 3 0.7 to pick card
-	if length < 1:
+	if length <= 1:
 		election(1, 0)
 	elif length < 3:
 		election(0.7, 0)
@@ -309,6 +378,8 @@ func _on_turn_finished():
 		print("done")
 		state = "done"
 		return
+	elif state == "uno":
+		display_rules()
 	if turn == 0:
 		if state == "points":
 			#make rules and points for players turn
@@ -341,25 +412,30 @@ func take_action(suit, number, player):
 		var rule = rules[[suit, number]]
 		if rule == 1:
 			#the opponent draws a card
+			bot["aggression"] += 0.2 * 1-bot["aggression"]
 			cardmanager.draw_deck(opponenthand)
 		elif rule == 2:
 			#the opponent is skipped
-			print("skip")
+			bot["aggression"] += 0.2 * (1-bot["aggression"])
 			skip = true
 		elif rule == 3:
 			#you may chooce a new suit
+			bot["aggression"] += 0.1 * 1-bot["aggression"]
 			toggle_suitbuttons()
 			return
 		elif rule == 4:
 			#you have to take a card of the opponent
+			bot["aggression"] += 0.2 * (1-bot["aggression"])
 			opponenthand.toggle_take(true)
 			return
 		elif rule == 5:
 			#you can give a card of your own
+			bot["aggression"] += 0.2 * (1-bot["aggression"])
 			playerhand.toggle_give(true)
 			return
 		elif rule == 6:
 			#you may look at a opponents card
+			bot["information"] += 0.2 * (1-bot["information"])
 			opponenthand.toggle_look(true)
 		else:
 			pass
@@ -403,6 +479,7 @@ func _on_button_pressed() -> void:
 func _on_uno_pressed() -> void:
 	state = "uno"
 	player_turn()
+	$Remove.visible = true
 	$Uno.visible = false
 	$Points.visible = false
 
@@ -418,10 +495,11 @@ func _on_points_pressed() -> void:
 	player_turn()
 	
 func add_rule(suit, number, rule):
+	bot["rule_changer"] += 0.2 * (1-bot["rule_changer"])
 	if rules[[suit, number]] not in [null, 0]:
+		print("not zero rule")
 		rules[[suit, number]] = rule
 		return
-	print("added rule")
 	for i in ["h", "c", "d", "s"]:
 		if rules[[i, number]] == null or rules[[i, number]] == 0:
 			rules[[i, number]] = rule
@@ -799,3 +877,12 @@ func special_rules(hand):
 			cardmanager.draw_deck(hand)
 		if history[-1][1] == 11 and i[0] == 5:
 			cardmanager.swap()
+
+
+func _on_remove_pressed() -> void:
+	#remove the rules of all cards with number
+	if cardslot.card:
+		for i in ["h", "c", "d", "s"]:
+			rules[[i, cardslot.card.number]] = 0
+		display_rules()
+		bot["rule_changer"] += 0.2 * (1-bot["rule_changer"])
