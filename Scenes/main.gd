@@ -40,6 +40,7 @@ var playerscore = 0
 var opponentscore = 0
 
 var pointrules = [[0]]
+# 0 normal values
 # 1 sandwich
 # 2 chain
 # 3 sequence
@@ -55,8 +56,9 @@ var pointrules = [[0]]
 # 13 minefield
 # 14 eclips
 # 15 gamble
-# 0 normal values
+# 16 colors
 
+var ending = 0
 var history = []
  
 func get_color(suit):
@@ -237,6 +239,8 @@ func opponent_turn():
 	else:
 		cardmanager.draw_deck(opponenthand)
 		history.append([card.suit, card.number])
+		#special rules
+		special_rules(opponenthand)
 		opponentscore += pointscore()
 		$OpScore.text = "Score Opp: %d" % [opponentscore]
 		
@@ -301,6 +305,10 @@ func setup():
 		opponentsetup()
 	
 func _on_turn_finished():
+	if state == "points" and checkend():
+		print("done")
+		state = "done"
+		return
 	if turn == 0:
 		if state == "points":
 			#make rules and points for players turn
@@ -311,6 +319,7 @@ func _on_turn_finished():
 				prob = 0.2
 			generate_rule(prob)
 			#calculate new score
+			special_rules(playerhand)
 			playerscore += pointscore()
 			$PlayScore.text = "Score Player: %d" % [playerscore]
 		opponent_turn()
@@ -403,6 +412,9 @@ func _on_points_pressed() -> void:
 	$Points.visible = false
 	$OpScore.visible = true
 	$PlayScore.visible = true
+	$Button.visible = false
+	$Take.visible = false
+	initial_rules()
 	player_turn()
 	
 func add_rule(suit, number, rule):
@@ -480,6 +492,21 @@ func end_game():
 	state = "done"
 	
 #EVERYTHING EXTRA FOR THE POINTGAME
+
+func initial_rules():
+	"""decide the initial rules of the points game"""
+	#decide ending
+	ending = randi() % 4
+	if ending == 0:
+		$Ending.text = "Ending: Race to 200 pts"
+	if ending == 1:
+		$Ending.text = "Ending: Hourglass (20 Turns)"
+	if ending == 2:
+		$Ending.text = "Ending: The Beast (3 Sixes on table)"
+	if ending == 3:
+		$Ending.text = "Ending: Panic Button (Play Q after turn 10)"
+		
+	pointrules = [[[0], [11, ["h", "c", "d", "s"].pick_random()], [16], [8], [9], [13, 8, 6, 10], [3], [1], [2]].pick_random()]
 
 func check_rule_decay():
 	var nrules = len(pointrules) 
@@ -575,7 +602,7 @@ func create_complex_rule():
 		probs.append(30)
 	if [13] not in pointrules:
 		var mine_val = randi() % 13 +1
-		var offset = randi() % 4
+		var offset = randi() % 4 + 1
 		var start = mine_val - offset
 		var end = mine_val + offset
 		if start < 2:
@@ -647,7 +674,7 @@ func pointscore():
 			textrules += "\n Universal Balance: There is a HIDDEN card that is God (+100 pts) and another Devil (-100 pts)."
 			score += yingyang_rule(i[1], i[2], i[3], i[4])
 		if i[0] == 13:
-			textrules += "\n Range $d-%d gives +20 pts... But there is a MINE!" % [i[2],i[3]]
+			textrules += "\n Range: %d - %d gives +20 pts... But there is a MINE!" % [i[2],i[3]]
 			score += minefield_rule(i[1], i[2], i[3])
 		if i[0] == 14:
 			textrules += "\n SOLAR ECLIPSE! The hierarchy is inverted: 2 is the strongest (Ace), Ace is the weakest (2)."
@@ -655,6 +682,9 @@ func pointscore():
 		if i[0] == 15:
 			textrules += "\n Gambling:Face cards +15, Low cards -10."
 			score += gamble_rule() 
+		if i[0] == 16:
+			textrules += "\n Chromatic Flow:Same color +5. Different -5."
+			score += colors_rule() 
 	$Rules.text = textrules
 	return score
 	
@@ -742,3 +772,30 @@ func gamble_rule():
 	if history[-1][1] < 6:
 		return -10
 	return 0
+	
+func colors_rule():
+	if len(history) >= 2 and get_color(history[-1][0]) == get_color(history[-2][0]):
+		return 5
+	return -5
+	
+func checkend():
+	"""checks the end for points game"""
+	if ending == 0 and (playerscore > 200 or opponentscore > 200):
+		return true
+	if ending == 1 and  round > 20:
+		return true
+	if ending == 2 and len(history.filter(func(arr): return arr.size() > 0 and arr[1])) == 6:
+		return true
+	if ending == 3 and len(history) > 10 and history[-1][1] == 12:
+		return true
+	return false
+	
+func special_rules(hand):
+	for i in pointrules:
+		if history[-1][1] == 7 and i[0] == 4:
+			if hand.hand:
+				cardmanager.place_card(hand.hand.pick_random(), hand)
+		if history[-1][1] == 2 and i[0] == 6:
+			cardmanager.draw_deck(hand)
+		if history[-1][1] == 11 and i[0] == 5:
+			cardmanager.swap()

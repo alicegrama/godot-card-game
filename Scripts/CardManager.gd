@@ -213,3 +213,16 @@ func looked():
 	$"..".add_rule($"../CardSlot".card.suit, $"../CardSlot".card.number, 6)
 	$"..".toggle_actions(false)
 	$"..".turn_finished.emit()
+	
+func swap():
+	"""swaps the cards between hands"""
+	var swap = player_hand_reference.hand
+	player_hand_reference.hand = opponent_hand_reference.hand
+	opponent_hand_reference.hand = swap
+	opponent_hand_reference.update_hand_positions(0.1)
+	for i in opponent_hand_reference.hand:
+		i.toggle()
+	player_hand_reference.update_hand_positions(0.1)
+	for i in player_hand_reference.hand:
+		i.toggle()
+	
