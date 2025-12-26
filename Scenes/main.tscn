@@ -188,15 +188,22 @@ offset_bottom = 326.0
 
 [node name="Setup" type="Label" parent="."]
 offset_left = 1064.0
-offset_top = 327.0
+offset_top = 326.0
 offset_right = 1109.0
-offset_bottom = 350.0
+offset_bottom = 349.0
 
 [node name="Round" type="Label" parent="."]
 offset_left = 1064.0
 offset_top = 263.0
 offset_right = 1104.0
 offset_bottom = 286.0
+
+[node name="Const" type="Label" parent="."]
+offset_left = 1064.0
+offset_top = 346.0
+offset_right = 1111.0
+offset_bottom = 369.0
+text = "Rules:"
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Uno" to="." method="_on_uno_pressed"]

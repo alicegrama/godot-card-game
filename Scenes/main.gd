@@ -743,7 +743,6 @@ func pointscore():
 	#and now also updates the rules on the label
 	var score = 0
 	var textrules = ""
-	print(pointrules)
 	for i in pointrules:
 		if i[0] == 0:
 			textrules += "\n Standard Value: Points = Card value (2-14)."
