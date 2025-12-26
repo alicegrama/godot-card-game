@@ -79,6 +79,8 @@ func toggle_look(visible):
 	$Look.visible = visible
 	
 func _on_take_pressed() -> void:
+	toggle_look(false)
+	toggle_take(false)
 	$"..".take($".", 1)
 
 func _on_give_pressed() -> void:

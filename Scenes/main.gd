@@ -9,7 +9,7 @@ var playablecards = []
 
 var state = "setup" #setup, uno, points, done 
 var playerstate = "card" #card or action : need to play a card or decide on a action for played card
-var round = 0
+var round = 1
 var skip = false
 var turn = 0 #whose turn it is
 
@@ -77,6 +77,7 @@ func _ready() -> void:
 	for i in range(14):
 		for j in ["h", "c", "d", "s"]:
 			rules[[j, i]] = null
+	$Phase.text = "Phase: Setup phase."
 	start_game()
 
 
@@ -199,10 +200,15 @@ func playable(hand):
 	var arr = []
 	for i in hand:
 		if check_uno(prevcard.suit, prevcard.number, i.suit, i.number):
+			print(i.suit)
+			print(i.number)
+			print("next")
 			arr.append(i)
 	return arr
 	
 func player_turn():
+	if len(playerhand.hand) == 0 or len(opponenthand.hand) == 0:
+		end_game()
 	turn = 0
 	playerstate = "card"
 	if skip:
@@ -211,6 +217,7 @@ func player_turn():
 		return
 	cardmanager.interaction = true
 	if state == "uno":
+		await get_tree().create_timer(0.1).timeout
 		playablecards = playable(playerhand.hand)
 		#show the playable cards
 		for i in playablecards:
@@ -295,11 +302,11 @@ func opponent_turn():
 		else:
 			card.toggle()
 			await cardmanager.place_card(card, opponenthand)
-			uno_decision(card)
+			await uno_decision(card)
 			
 			if len(opponenthand.hand) == 0:
 				#game is over
-				print("gameover")
+				end_game()
 				return
 	else:
 		#points
@@ -337,6 +344,11 @@ func election(pick, seed):
 	else:
 		state = "choice"
 		cardmanager.interaction = false
+		#setup rules
+		if cardslot.card != null:
+			$Setup.text = "Setup Rules: Draw %d cards, and put a card on the table" % [len(playerhand.hand)]
+		else:
+			$Setup.text = "Setup Rules: Draw %d cards" % [len(playerhand.hand)]
 		$Uno.visible = true
 		$Points.visible = true
 		
@@ -360,6 +372,11 @@ func opponentsetup():
 	
 	if len(playerhand.hand) >= 10:
 		state = "choice"
+		#setup rules
+		if cardslot.card != null:
+			$Setup.text = "Setup Rules: Draw %d cards, and put a card on the table" % [len(playerhand.hand)]
+		else:
+			$Setup.text = "Setup Rules: Draw %d cards" % [len(playerhand.hand)]
 		cardmanager.interaction = false
 		$Uno.visible = true
 		$Points.visible = true
@@ -377,6 +394,7 @@ func _on_turn_finished():
 	if state == "points" and checkend():
 		print("done")
 		state = "done"
+		$Phase.text = "Phase: Finished"
 		return
 	elif state == "uno":
 		display_rules()
@@ -397,12 +415,12 @@ func _on_turn_finished():
 
 	else:
 		round += 1
+		$Round.text = "Turn: %d" %[round]
 		player_turn()
 			
 
 func start_game():
 	setup()
-	pass
 	
 func take_action(suit, number, player):
 	#take the action on a given card following the rules
@@ -446,7 +464,6 @@ func take_action(suit, number, player):
 			cardmanager.draw_deck(playerhand)
 		elif rule == 2:
 			skip = true
-			print("hi ")
 		elif rule == 3:
 			var s = ['h', 'c', 's', 'd'].pick_random()
 			cardslot.card.setup(s, number)
@@ -458,6 +475,8 @@ func take_action(suit, number, player):
 func toggle_actions(visible):
 	#toggles the action buttons you can take
 	playerstate = "action"
+	$Button.visible = visible
+	$ColorRect.visible = visible
 	$Skip.visible = visible
 	$Suit.visible = visible
 	$Give.visible = visible
@@ -470,6 +489,10 @@ func _on_button_pressed() -> void:
 	if state == "setup" and cardmanager.interaction:
 		state = "choice"
 		cardmanager.interaction = false
+		if cardslot.card != null:
+			$Setup.text = "Setup Rules: Draw %d cards, and put a card on the table" % [len(playerhand.hand)]
+		else:
+			$Setup.text = "Setup Rules: Draw %d cards" % [len(playerhand.hand)]
 		$Uno.visible = true
 		$Points.visible = true
 	if state == "uno" and cardmanager.interaction and playerstate == "action":
@@ -477,18 +500,25 @@ func _on_button_pressed() -> void:
 		turn_finished.emit()
 
 func _on_uno_pressed() -> void:
+	$Round.text = "Turn 1"
+	$Button.text ="No Action"
+	$Button.visible = false
+	$ColorRect.visible = false
 	state = "uno"
+	$Phase.text = "Phase: Game maker"
 	player_turn()
 	$Remove.visible = true
 	$Uno.visible = false
 	$Points.visible = false
 
 func _on_points_pressed() -> void:
+	$Phase.text = "Phase: Game maker"
 	state = "points"
 	$Uno.visible = false
 	$Points.visible = false
 	$OpScore.visible = true
 	$PlayScore.visible = true
+	$ColorRect.visible = false
 	$Button.visible = false
 	$Take.visible = false
 	initial_rules()
@@ -568,6 +598,7 @@ func _on_diamond_pressed() -> void:
 	
 func end_game():
 	state = "done"
+	$Phase.text = "Finished"
 	
 #EVERYTHING EXTRA FOR THE POINTGAME
 
@@ -582,7 +613,7 @@ func initial_rules():
 	if ending == 2:
 		$Ending.text = "Ending: The Beast (3 Sixes on table)"
 	if ending == 3:
-		$Ending.text = "Ending: Panic Button (Play Q after turn 10)"
+		$Ending.text = "Ending: Panic Button (Play a Q after turn 10)"
 		
 	pointrules = [[[0], [11, ["h", "c", "d", "s"].pick_random()], [16], [8], [9], [13, 8, 6, 10], [3], [1], [2]].pick_random()]
 
@@ -871,7 +902,7 @@ func checkend():
 func special_rules(hand):
 	for i in pointrules:
 		if history[-1][1] == 7 and i[0] == 4:
-			if hand.hand:
+			if len(hand.hand) > 1:
 				cardmanager.place_card(hand.hand.pick_random(), hand)
 		if history[-1][1] == 2 and i[0] == 6:
 			cardmanager.draw_deck(hand)

@@ -51,16 +51,16 @@ shape = SubResource("RectangleShape2D_21xkr")
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_left = 1150.0
 offset_top = 444.0
-offset_right = 1199.0
+offset_right = 1288.0
 offset_bottom = 475.0
 color = Color(1, 0.23921569, 0.19215687, 1)
 
 [node name="Button" type="Button" parent="."]
 offset_left = 1150.0
 offset_top = 444.0
-offset_right = 1199.0
+offset_right = 1287.0
 offset_bottom = 475.0
-text = "Done"
+text = "End Setup Phase"
 
 [node name="Uno" type="Button" parent="."]
 visible = false
@@ -81,9 +81,9 @@ text = "POINTS"
 [node name="Give" type="Button" parent="."]
 visible = false
 offset_left = 280.0
-offset_top = 488.0
+offset_top = 440.0
 offset_right = 322.0
-offset_bottom = 519.0
+offset_bottom = 471.0
 text = "Give"
 
 [node name="Take" type="Button" parent="."]
@@ -161,18 +161,16 @@ text = "Score Player: 0
 "
 
 [node name="Rules" type="Label" parent="."]
-offset_left = 1079.0
+offset_left = 1064.0
 offset_top = 490.0
-offset_right = 1126.0
+offset_right = 1111.0
 offset_bottom = 539.0
 
 [node name="Ending" type="Label" parent="."]
-offset_left = 1068.0
-offset_top = 296.0
-offset_right = 1121.0
-offset_bottom = 345.0
-text = "ending
-"
+offset_left = 1064.0
+offset_top = 363.0
+offset_right = 1117.0
+offset_bottom = 412.0
 
 [node name="Remove" type="Button" parent="."]
 visible = false
@@ -181,6 +179,24 @@ offset_top = 441.0
 offset_right = 504.0
 offset_bottom = 472.0
 text = "Remove Rule"
+
+[node name="Phase" type="Label" parent="."]
+offset_left = 1064.0
+offset_top = 303.0
+offset_right = 1111.0
+offset_bottom = 326.0
+
+[node name="Setup" type="Label" parent="."]
+offset_left = 1064.0
+offset_top = 327.0
+offset_right = 1109.0
+offset_bottom = 350.0
+
+[node name="Round" type="Label" parent="."]
+offset_left = 1064.0
+offset_top = 263.0
+offset_right = 1104.0
+offset_bottom = 286.0
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Uno" to="." method="_on_uno_pressed"]
