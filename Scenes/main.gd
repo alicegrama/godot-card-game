@@ -780,13 +780,13 @@ func pointscore():
 			textrules += "\n Law of %s: %s cards: +10 pts." %[i[1], i[1]]
 			score += suit_rule(i[1])
 		if i[0] == 12:
-			textrules += "\n Universal Balance: There is a HIDDEN card that is God (+100 pts) and another Devil (-100 pts)."
+			textrules += "\n Universal Balance: There is a HIDDEN card that is God (+100 pts)\n and another Devil (-100 pts)."
 			score += yingyang_rule(i[1], i[2], i[3], i[4])
 		if i[0] == 13:
 			textrules += "\n Range: %d - %d gives +20 pts... But there is a MINE!" % [i[2],i[3]]
 			score += minefield_rule(i[1], i[2], i[3])
 		if i[0] == 14:
-			textrules += "\n SOLAR ECLIPSE! The hierarchy is inverted: 2 is the strongest (Ace), Ace is the weakest (2)."
+			textrules += "\n SOLAR ECLIPSE! The hierarchy is inverted: 2 is the strongest (Ace),\n Ace is the weakest (2)."
 			score += eclips_rule()
 		if i[0] == 15:
 			textrules += "\n Gambling:Face cards +15, Low cards -10."
@@ -895,7 +895,7 @@ func checkend():
 	"""checks the end for points game"""
 	if ending == 0 and (playerscore > 200 or opponentscore > 200):
 		return true
-	if ending == 1 and  round > 20:
+	if ending == 1 and  round >= 20:
 		return true
 	if ending == 2 and len(history.filter(func(arr): return arr.size() > 0 and arr[1] == 6)) == 3:
 		return true
