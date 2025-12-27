@@ -800,7 +800,7 @@ func pointscore():
 func value_rule():
 	if len(history) == 0:
 		return 0
-	if history [-1][1] == 1:
+	if len(history) > 0 and history [-1][1] == 1:
 		return 14
 	return history[-1][1]
 
@@ -834,7 +834,7 @@ func swap_rule():
 	pass #swap hands
 	
 func draw_rule(hand):
-	if history[-1] == 2:
+	if len(history) > 0 and history[-1] == 2:
 		cardmanager.draw_card(hand)
 		
 func even_odd_rule(even):
@@ -853,26 +853,26 @@ func face_rule():
 	return 0
 	
 func rank_rule(rank):
-	if history[-1][1] == rank:
+	if len(history) > 0 and history[-1][1] == rank:
 		return 25
 	return 0
 
 func suit_rule(suit):
-	if history[-1][0] == suit:
+	if len(history) > 0 and history[-1][0] == suit:
 		return 25
 	return 0
 	
 func yingyang_rule(gsuit, gnumber, dsuit, dnumber):
-	if history[-1][0] == gsuit and history[-1][1] == gnumber:
+	if len(history) > 0 and history[-1][0] == gsuit and history[-1][1] == gnumber:
 		return 100
-	if history[-1][0] == dsuit and history[-1][1] == dnumber:
+	if len(history) > 0 and history[-1][0] == dsuit and history[-1][1] == dnumber:
 		return -100
 	return 0
 
 func minefield_rule(number, lower, upper):
-	if history[-1][1] == number:
+	if len(history) > 0 and history[-1][1] == number:
 		return -50
-	if lower <= history[-1][1] and history[-1][1] <= upper:
+	if len(history) > 0 and lower <= history[-1][1] and history[-1][1] <= upper:
 		return 20
 	return 0
 	
@@ -880,9 +880,9 @@ func eclips_rule():
 	return 16 - (2 * history[-1][1])
 	
 func gamble_rule():
-	if history[-1][1] > 10 :
+	if len(history) > 0 and history[-1][1] > 10 :
 		return 15
-	if history[-1][1] < 6:
+	if len(history) > 0 and history[-1][1] < 6:
 		return -10
 	return 0
 	
