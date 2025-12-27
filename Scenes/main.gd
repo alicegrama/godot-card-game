@@ -798,6 +798,10 @@ func pointscore():
 	return score
 	
 func value_rule():
+	if len(history) == 0:
+		return 0
+	if history [-1][1] == 1:
+		return 14
 	return history[-1][1]
 
 func sandwich_rule():
