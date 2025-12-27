@@ -711,15 +711,15 @@ func create_complex_rule():
 		weighted_candidates.append([12, gsuit, gnumber, dsuit, dnumber])
 		probs.append(30)
 	if [13] not in pointrules:
-		var mine_val = randi() % 13 +1
-		var offset = randi() % 4 + 1
+		var mine_val = randi() % 13 +2
+		var offset = randi() % 5
 		var start = mine_val - offset
-		var end = mine_val + offset
+		var end = mine_val + 4 + offset
 		if start < 2:
-			end += 2-start
+			end += 6
 			start = 2
 		if end > 13:
-			start = end - 13
+			start = 9
 			end = 13
 			
 		weighted_candidates.append([13, mine_val, start, end])
