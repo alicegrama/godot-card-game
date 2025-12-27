@@ -361,11 +361,11 @@ func opponentsetup():
 	#Smaller than 3 0.7 to pick card
 	if length <= 1:
 		election(1, 0)
-	elif length < 3:
-		election(0.7, 0)
+	elif length < 5:
+		election(0.8, 0)
 	#Smaller than 7 0.4 to pick card, 0.5 to give seed
-	elif length < 7:
-		election(0.4, 0.5)
+	elif length < 8:
+		election(0.45, 0.55)
 	#Else 0.25 to pick card, 0.5 to give seed
 	else:
 		election(0.25, 0.5)
