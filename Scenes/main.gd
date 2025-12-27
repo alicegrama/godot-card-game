@@ -893,7 +893,7 @@ func checkend():
 		return true
 	if ending == 1 and  round > 20:
 		return true
-	if ending == 2 and len(history.filter(func(arr): return arr.size() > 0 and arr[1])) == 6:
+	if ending == 2 and len(history.filter(func(arr): return arr.size() > 0 and arr[1] == 6)) == 3:
 		return true
 	if ending == 3 and round >= 10 and history[-1][1] == 12:
 		return true
