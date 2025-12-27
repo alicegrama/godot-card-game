@@ -834,17 +834,17 @@ func draw_rule(hand):
 		cardmanager.draw_card(hand)
 		
 func even_odd_rule(even):
-	if history[-1][1] % 2 == int(even):
+	if len(history) > 0 and history[-1][1] % 2 == int(even):
 		return 8
 	return 0
 
 func micro_rule():
-	if history[-1][1] <= 5 and history[-1][1] > 1 :
+	if len(history) > 0 and history[-1][1] <= 5 and history[-1][1] > 1 :
 		return 15
 	return 0
 	
 func face_rule():
-	if history[-1][1] >= 11:
+	if len(history) > 0 and history[-1][1] >= 11:
 		return 10
 	return 0
 	
