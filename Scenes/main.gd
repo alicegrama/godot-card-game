@@ -38,7 +38,7 @@ signal turn_finished
 var playerscore = 0
 var opponentscore = 0
 
-var pointrules = [[0]]
+var pointrules = []
 # 0 normal values
 # 1 sandwich
 # 2 chain
@@ -616,6 +616,7 @@ func initial_rules():
 		$Ending.text = "Ending: Panic Button (Play a Q after turn 10)"
 		
 	pointrules = [[[0], [11, ["h", "c", "d", "s"].pick_random()], [16], [8], [9], [13, 8, 6, 10], [3], [1], [2]].pick_random()]
+	pointscore()
 
 func check_rule_decay():
 	var nrules = len(pointrules) 
