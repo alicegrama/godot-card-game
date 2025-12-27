@@ -877,6 +877,8 @@ func minefield_rule(number, lower, upper):
 	return 0
 	
 func eclips_rule():
+	if history[-1][1] == 1:
+		return 2
 	return 16 - (2 * history[-1][1])
 	
 func gamble_rule():
@@ -907,7 +909,10 @@ func special_rules(hand):
 	for i in pointrules:
 		if history[-1][1] == 7 and i[0] == 4:
 			if len(hand.hand) > 1:
-				cardmanager.place_card(hand.hand.pick_random(), hand)
+				var card = hand.hand.pick_random()
+				if hand == opponenthand:
+					card.toggle()
+				cardmanager.place_card(card, hand)
 		if history[-1][1] == 2 and i[0] == 6:
 			cardmanager.draw_deck(hand)
 		if history[-1][1] == 11 and i[0] == 5:
