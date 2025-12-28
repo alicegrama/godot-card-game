@@ -877,7 +877,7 @@ func minefield_rule(number, lower, upper):
 	return 0
 	
 func eclips_rule():
-	if history[-1][1] == 1:
+	if len(history) > 0 and history[-1][1] == 1:
 		return 2
 	return 16 - (2 * history[-1][1])
 	
