@@ -48,17 +48,17 @@ texture = ExtResource("5_kry3j")
 position = Vector2(0, -1.5)
 shape = SubResource("RectangleShape2D_21xkr")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-offset_left = 1150.0
-offset_top = 444.0
-offset_right = 1288.0
-offset_bottom = 475.0
-color = Color(1, 0.23921569, 0.19215687, 1)
+[node name="Background" type="ColorRect" parent="."]
+visibility_layer = 512
+z_index = -4096
+offset_right = 1928.0
+offset_bottom = 1083.0
+color = Color(0.19865194, 0.23049131, 0.22083691, 1)
 
 [node name="Button" type="Button" parent="."]
 offset_left = 1150.0
 offset_top = 444.0
-offset_right = 1287.0
+offset_right = 1350.0
 offset_bottom = 475.0
 text = "End Setup Phase"
 

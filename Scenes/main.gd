@@ -213,6 +213,7 @@ func playable(hand):
 	
 func player_turn():
 	"""When it is the players turn, give the player interaction and set correct states."""
+	$Background.color = "333b38"
 	if len(playerhand.hand) == 0 or len(opponenthand.hand) == 0:
 		end_game()
 	turn = 0
@@ -291,6 +292,7 @@ func uno_decision(card):
 
 func opponent_turn():
 	"""oppents turn, if allowed to take action place a card which is allowed."""
+	$Background.color = "37393a"
 	turn = 1
 	if skip:
 		skip = false
@@ -330,6 +332,7 @@ func opponent_turn():
 	
 func playersetup():
 	"""A turn for the player in the setup"""
+	$Background.color = "333b38"
 	#player can take a action.
 	cardmanager.interaction = true
 	
@@ -361,6 +364,7 @@ func election(pick, seed):
 	
 func opponentsetup():
 	"""opponents turn in the setup, with given changes given the hand size."""
+	$Background.color = "37393a"
 	#opponent takes a card
 	cardmanager.interaction = false
 	await get_tree().create_timer(1.0).timeout
@@ -483,7 +487,7 @@ func toggle_actions(visible):
 	"""toggles the action buttons you can take, to being the visible: true or false"""
 	playerstate = "action"
 	$Button.visible = visible
-	$ColorRect.visible = visible
+	
 	$Skip.visible = visible
 	$Suit.visible = visible
 	$Give.visible = visible
@@ -512,7 +516,6 @@ func _on_uno_pressed() -> void:
 	$Round.text = "Round 1"
 	$Button.text ="No Action"
 	$Button.visible = false
-	$ColorRect.visible = false
 	state = "uno"
 	$Phase.text = "Phase: Game maker"
 	player_turn()
@@ -528,7 +531,6 @@ func _on_points_pressed() -> void:
 	$Points.visible = false
 	$OpScore.visible = true
 	$PlayScore.visible = true
-	$ColorRect.visible = false
 	$Button.visible = false
 	$Take.visible = false
 	initial_rules()
