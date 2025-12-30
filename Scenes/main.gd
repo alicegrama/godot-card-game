@@ -61,6 +61,7 @@ var ending = 0
 var history = []
  
 func get_color(suit):
+	"""Given a suit returns the color of the suit."""
 	if suit == 's':
 		return 0
 	if suit == 'h':
@@ -78,7 +79,8 @@ func _ready() -> void:
 		for j in ["h", "c", "d", "s"]:
 			rules[[j, i]] = null
 	$Phase.text = "Phase: Setup phase."
-	start_game()
+	#start the setup
+	setup()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -86,7 +88,7 @@ func _process(delta: float) -> void:
 	pass
 	
 func get_rule(name, rule):
-	#given a name suit number or only number gives rule string
+	"""get the text for a given rule, given the name of a card"""
 	var text = ""
 	if rule == 1:
 		text += "%s: Give a card from the deck.\n"% [name]
@@ -103,7 +105,7 @@ func get_rule(name, rule):
 	return text
 	
 func get_cardname(number):
-	#gives card name according to the number
+	"""gives a card name for face cards given its number"""
 	if number == 1:
 		return 'A'
 	if number < 11:
@@ -116,7 +118,7 @@ func get_cardname(number):
 		return 'K'
 	
 func display_rules():
-	"""display the rules"""
+	"""display the rules of uno"""
 	var placetext = "" #text that explains the placement rules
 	var ruletext = ""
 	#Globrules:
@@ -150,7 +152,10 @@ func display_rules():
 	$Ending.text = placetext
 
 func check_uno(prevsuit, prevnumber, suit, number):
-	#returns true if it can be played in current rules
+	"""
+	returns true if the given suit number can be played
+	in current rules on the previous suit and number
+	"""
 	if globrules[0] == 0 and globrules[1] == 0:
 		return true
 	if globrules[0] == 2:
@@ -170,29 +175,32 @@ func check_uno(prevsuit, prevnumber, suit, number):
 			return true
 			
 func change_rules(number, suit, prevnumber, prevsuit):
+	"""When placement rules are broken, give the new rules where the placement of 
+	the number suit, previous number suit can be allowed """
 	bot["experiment"] += 0.2 * (1-bot["experiment"])
 	if globrules[0] == 2:
+		#check if the color is the same.
 		if get_color(suit) == get_color(prevsuit):
-			print("colors now")
 			globrules[0] = 1
 			return
 	if globrules[1] == 3:
+		#check if greater is allowed
 		if number >= prevnumber:
-			print("greater now")
 			globrules[1] = 2
 			return
+		#check if smaller is allowed
 		if number <= prevnumber:
-			print("lesser now")
 			globrules[1] = 1
 			return
 	else:
-		print("all in")
+		#everything will be allowed
 		globrules[0] = 0
 		globrules[1] = 0
 		
 
 	
 func playable(hand):
+	"""returns the cards which can be played using the current rules."""
 	#depending on the rules return playble cards of hand
 	var prevcard = cardslot.card
 	if prevcard == null:
@@ -200,13 +208,11 @@ func playable(hand):
 	var arr = []
 	for i in hand:
 		if check_uno(prevcard.suit, prevcard.number, i.suit, i.number):
-			print(i.suit)
-			print(i.number)
-			print("next")
 			arr.append(i)
 	return arr
 	
 func player_turn():
+	"""When it is the players turn, give the player interaction and set correct states."""
 	if len(playerhand.hand) == 0 or len(opponenthand.hand) == 0:
 		end_game()
 	turn = 0
@@ -228,8 +234,8 @@ func player_turn():
 		
 	
 func random_choice(arr, prob):
-	#take a random choice of array with probababilities of prob
-	# prob needs to have the same length
+	"""take a random choice of an array with probababilities of prob.
+	prob needs to have the same length as arr."""
 	if len(arr) != len(prob):
 		return null
 	var p = randf()
@@ -241,8 +247,7 @@ func random_choice(arr, prob):
 	return null
 	
 func uno_decision(card):
-	print(bot["aggression"])
-	#the bot decides what to do in the round
+	"""on uno the bot decide the rules for his turn"""
 	#action with card
 	var rule = 0
 	if rules[[card.suit, card.number]] == 0:
@@ -285,6 +290,7 @@ func uno_decision(card):
 			bot[i] += 0.03* (0.4-bot[i])
 
 func opponent_turn():
+	"""oppents turn, if allowed to take action place a card which is allowed."""
 	turn = 1
 	if skip:
 		skip = false
@@ -323,6 +329,7 @@ func opponent_turn():
 	turn_finished.emit()
 	
 func playersetup():
+	"""A turn for the player in the setup"""
 	#player can take a action.
 	cardmanager.interaction = true
 	
@@ -333,8 +340,7 @@ func playersetup():
 		$Points.visible = true
 
 func election(pick, seed):
-	#setup choice for opponent
-	#with chance to pickcards, and set seed
+	"""setup for the opponent, with chance to pick a card, stop or set seed."""
 	var election = randf()
 	if election < pick:
 		cardmanager.draw_deck(playerhand)
@@ -354,22 +360,25 @@ func election(pick, seed):
 		
 	
 func opponentsetup():
+	"""opponents turn in the setup, with given changes given the hand size."""
 	#opponent takes a card
 	cardmanager.interaction = false
 	await get_tree().create_timer(1.0).timeout
 	var length = len(opponenthand.hand)
-	#Smaller than 3 0.7 to pick card
+	#Smaller equal than 1 pick a card
 	if length <= 1:
 		election(1, 0)
+	#Smaller then 5 pick a card with 0.8 stop with 0.2
 	elif length < 5:
 		election(0.8, 0)
-	#Smaller than 7 0.4 to pick card, 0.5 to give seed
+	#Smaller than 8 0.45 to pick card, 0.55 to give seed
 	elif length < 8:
 		election(0.45, 0.55)
-	#Else 0.25 to pick card, 0.5 to give seed
+	#else 0.25 to pick card, 0.5 to give seed, 0.25 to stop
 	else:
 		election(0.25, 0.5)
 	
+	# not higher than 10 cards in the hand
 	if len(playerhand.hand) >= 10:
 		state = "choice"
 		#setup rules
@@ -383,7 +392,7 @@ func opponentsetup():
 	playersetup()
 	
 func setup():
-	#randomly start with 
+	"""setup start, where randomly the player or the opponent start"""
 	state = "setup"
 	if randi() % 2:
 		playersetup()
@@ -391,8 +400,9 @@ func setup():
 		opponentsetup()
 	
 func _on_turn_finished():
+	"""an signal for ending the opponents or players turn and give it to the other."""
+	#end of a points game
 	if state == "points" and checkend():
-		print("done")
 		state = "done"
 		$Phase.text = "Phase: Finished"
 		return
@@ -415,15 +425,14 @@ func _on_turn_finished():
 
 	else:
 		round += 1
-		$Round.text = "Turn: %d" %[round]
+		$Round.text = "Round: %d" %[round]
 		player_turn()
-			
-
-func start_game():
-	setup()
 	
 func take_action(suit, number, player):
-	#take the action on a given card following the rules
+	"""
+	take the action for uno given a number suit and player, following the rules.
+	Also update the bots emotion values if the player took an action.
+	"""
 	#with player being true or false
 	if player:
 		toggle_actions(false)
@@ -455,8 +464,6 @@ func take_action(suit, number, player):
 			#you may look at a opponents card
 			bot["information"] += 0.2 * (1-bot["information"])
 			opponenthand.toggle_look(true)
-		else:
-			pass
 		turn_finished.emit()
 	else:
 		var rule = rules[[suit, number]] 
@@ -473,7 +480,7 @@ func take_action(suit, number, player):
 			cardmanager.take(opponenthand.hand.pick_random(), true)
 
 func toggle_actions(visible):
-	#toggles the action buttons you can take
+	"""toggles the action buttons you can take, to being the visible: true or false"""
 	playerstate = "action"
 	$Button.visible = visible
 	$ColorRect.visible = visible
@@ -486,6 +493,7 @@ func toggle_actions(visible):
 	opponenthand.toggle_look(visible)
 
 func _on_button_pressed() -> void:
+	"""Button pressed ending of a uno turn or ending of the setup."""
 	if state == "setup" and cardmanager.interaction:
 		state = "choice"
 		cardmanager.interaction = false
@@ -500,7 +508,8 @@ func _on_button_pressed() -> void:
 		turn_finished.emit()
 
 func _on_uno_pressed() -> void:
-	$Round.text = "Turn 1"
+	"""start a uno turn."""
+	$Round.text = "Round 1"
 	$Button.text ="No Action"
 	$Button.visible = false
 	$ColorRect.visible = false
@@ -512,6 +521,7 @@ func _on_uno_pressed() -> void:
 	$Points.visible = false
 
 func _on_points_pressed() -> void:
+	"""start a point turn"""
 	$Phase.text = "Phase: Game maker"
 	state = "points"
 	$Uno.visible = false
@@ -525,9 +535,9 @@ func _on_points_pressed() -> void:
 	player_turn()
 	
 func add_rule(suit, number, rule):
+	"""For uno add the given rule to the card suit number."""
 	bot["rule_changer"] += 0.2 * (1-bot["rule_changer"])
 	if rules[[suit, number]] not in [null, 0]:
-		print("not zero rule")
 		rules[[suit, number]] = rule
 		return
 	for i in ["h", "c", "d", "s"]:
@@ -535,17 +545,15 @@ func add_rule(suit, number, rule):
 			rules[[i, number]] = rule
 
 func _on_give_pressed() -> void:
+	"""The give button is pressed, the opponent is given a card."""
 	if state == "uno" and cardmanager.interaction and playerstate == "action":
 		cardmanager.draw_deck(opponenthand)
 		add_rule(cardslot.card.suit, cardslot.card.number, 1)
 		toggle_actions(false)
 		turn_finished.emit()
-	elif state == "setup" and cardmanager.interaction:
-		cardmanager.draw_deck(playerhand)
-		cardmanager.draw_deck(opponenthand)
-		opponentsetup()
 
 func _on_take_pressed() -> void:
+	"""take a card, can be done in uno as well as in the setup."""
 	if state == "uno" and cardmanager.interaction and playerstate == "card":
 		cardmanager.draw_deck(playerhand)
 		turn_finished.emit()
@@ -556,17 +564,20 @@ func _on_take_pressed() -> void:
 
 
 func _on_skip_pressed() -> void:
+	"""The skip button adds the rule skip to the card"""
 	if state == "uno" and cardmanager.interaction and playerstate == "action":
 		add_rule(cardslot.card.suit, cardslot.card.number, 2)
 		take_action(cardslot.card.suit, cardslot.card.number, 1)
 
 
 func _on_suit_pressed() -> void:
+	"""Adds the rule to change the suit on a card."""
 	if state == "uno" and cardmanager.interaction and playerstate == "action":
 		add_rule(cardslot.card.suit, cardslot.card.number, 3)
 		take_action(cardslot.card.suit, cardslot.card.number, 1)
 
 func toggle_suitbuttons():
+	"""The buttons to change the suit of the played card"""
 	$Heart.visible = !$Heart.visible
 	$Club.visible = !$Club.visible
 	$Spade.visible = !$Spade.visible
@@ -600,7 +611,7 @@ func end_game():
 	state = "done"
 	$Phase.text = "Finished"
 	
-#EVERYTHING EXTRA FOR THE POINTGAME
+#Underneath is every extra function for the points game
 
 func initial_rules():
 	"""decide the initial rules of the points game"""
@@ -619,6 +630,7 @@ func initial_rules():
 	pointscore()
 
 func check_rule_decay():
+	"""Removes rules to reduce clutter."""
 	var nrules = len(pointrules) 
 	var decay_prob = max(0, (nrules-3)*0.1)
 	if pointrules and randf() < decay_prob:
@@ -667,31 +679,39 @@ func create_justification_rule():
 			elif not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 3):
 				pointrules.append([3])
 				return
-	
+	#destroy rule
 	if history[-1][1] == 7 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 4):
 		probs.append(40)
 		weighted_candidates.append([4])
+	# swap on J
 	if history[-1][1] == 11 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 5):
 		weighted_candidates.append([5])
 		probs.append(30)
+	# 2 adds a card to the hand
 	if history[-1][1] == 2 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 6):
 		weighted_candidates.append([6])
 		probs.append(30)
+	# even odd
 	if not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 7):
 		weighted_candidates.append([7, (history[-1][1]%2) == 1])
 		probs.append(15)
+	# low cards
 	if history[-1][1] <= 5 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 8):
 		weighted_candidates.append([8])
 		probs.append(15)
+	# face cards
 	if history[-1][1] >= 11 and not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 9):
 		weighted_candidates.append([9])
 		probs.append(10)
+	# ranks
 	if not pointrules.any(func(arr): return arr.size() > 0 and arr[0] == 10):
 		weighted_candidates.append([10, history[-1][1]])
 		probs.append(20)
+	# suits
 	if [11, history[-1][0]] not in pointrules and len(pointrules.filter(func(arr): return arr.size() > 0 and arr[0] == 11)) <2:
 		weighted_candidates.append([11, history[-1][0]])
 		probs.append(10)
+	# choose candidate
 	if weighted_candidates:
 		var total = 0
 		for i in probs:
@@ -740,8 +760,9 @@ func create_complex_rule():
 		pointrules.append(random_choice(weighted_candidates, probs))
 		
 func pointscore():
-	#returns value of top card
-	#and now also updates the rules on the label
+	"""returns value of top card
+	and now also updates the rules on the label.
+	"""
 	var score = 0
 	var textrules = ""
 	for i in pointrules:
@@ -798,6 +819,7 @@ func pointscore():
 	return score
 	
 func value_rule():
+	"""return the value of the card"""
 	if len(history) == 0:
 		return 0
 	if len(history) > 0 and history [-1][1] == 1:
@@ -805,12 +827,14 @@ func value_rule():
 	return history[-1][1]
 
 func sandwich_rule():
+	"""30 points if there is a card between two identical numbers"""
 	if len(history) >= 3 and history[-1][1] == history[-3][1]:
 		#current rank is the same as two back
 		return 30 + history[-1][1]
 	return 0
 
 func chain_rule():
+	"""When 3 card after eachother and differece 1 as numbers give 50 points."""
 	if len(history) >= 3:
 		var card = history[-1]
 		var prev = history[-2]
@@ -820,6 +844,7 @@ func chain_rule():
 	return 0
 		
 func sequence_rule():
+	""""""
 	if len(history) >= 3:
 		var card = history[-1]
 		var prev = history[-2]
