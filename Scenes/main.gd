@@ -7,8 +7,12 @@ extends Node2D
 @onready var cardmanager = $CardManager
 @onready var opponenthand = $OpponentHand
 @onready var cardslot = $CardSlot
+
 @onready var take: Button = $Take
 @onready var end: Button = $Button
+@onready var uno: Button = $Uno
+@onready var points: Button = $Points
+@onready var remove: Button = $Remove
 
 var playablecards = []
 
@@ -94,6 +98,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	btn_hovered(take)
 	btn_hovered(end)
+	btn_hovered(uno)
+	btn_hovered(points)
+	btn_hovered(remove)
+	
 
 func start_tween(object: Object, property: String, final_val: Variant, duration: float):
 	var tween = create_tween()
@@ -235,7 +243,7 @@ func playable(hand):
 	
 func player_turn():
 	"""When it is the players turn, give the player interaction and set correct states."""
-	$Background.color = "353a36"
+	$Background.color = "2b302b"
 	if len(playerhand.hand) == 0 or len(opponenthand.hand) == 0:
 		end_game()
 	turn = 0
@@ -314,7 +322,7 @@ func uno_decision(card):
 
 func opponent_turn():
 	"""oppents turn, if allowed to take action place a card which is allowed."""
-	$Background.color = "37393a"
+	$Background.color = "2b2d2b"
 	turn = 1
 	if skip:
 		skip = false
@@ -354,7 +362,7 @@ func opponent_turn():
 	
 func playersetup():
 	"""A turn for the player in the setup"""
-	$Background.color = "353a36"
+	$Background.color = "2b302b"
 	#player can take a action.
 	cardmanager.interaction = true
 	
@@ -386,7 +394,7 @@ func election(pick, seed):
 	
 func opponentsetup():
 	"""opponents turn in the setup, with given changes given the hand size."""
-	$Background.color = "37393a"
+	$Background.color = "2b2d2b"
 	#opponent takes a card
 	cardmanager.interaction = false
 	await get_tree().create_timer(1.0).timeout
