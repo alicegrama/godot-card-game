@@ -213,7 +213,7 @@ func playable(hand):
 	
 func player_turn():
 	"""When it is the players turn, give the player interaction and set correct states."""
-	$Background.color = "333b38"
+	$Background.color = "353a36"
 	if len(playerhand.hand) == 0 or len(opponenthand.hand) == 0:
 		end_game()
 	turn = 0
@@ -332,7 +332,7 @@ func opponent_turn():
 	
 func playersetup():
 	"""A turn for the player in the setup"""
-	$Background.color = "333b38"
+	$Background.color = "353a36"
 	#player can take a action.
 	cardmanager.interaction = true
 	
