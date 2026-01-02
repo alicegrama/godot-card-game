@@ -1,9 +1,14 @@
 extends Node2D
 
+@export var tween_intensity: float
+@export var tween_duration: float
+
 @onready var playerhand = $PlayerHand
 @onready var cardmanager = $CardManager
 @onready var opponenthand = $OpponentHand
 @onready var cardslot = $CardSlot
+@onready var take: Button = $Take
+@onready var end: Button = $Button
 
 var playablecards = []
 
@@ -60,6 +65,8 @@ var pointrules = []
 var ending = 0
 var history = []
  
+
+
 func get_color(suit):
 	"""Given a suit returns the color of the suit."""
 	if suit == 's':
@@ -85,7 +92,22 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	btn_hovered(take)
+	btn_hovered(end)
+
+func start_tween(object: Object, property: String, final_val: Variant, duration: float):
+	var tween = create_tween()
+	tween.tween_property(object, property, final_val, duration)
+	
+	
+func btn_hovered(button: Button):
+	button.pivot_offset = button.size /2
+	if button.is_hovered():
+		start_tween(button, "scale", Vector2.ONE * tween_intensity, tween_duration)
+	else:
+		start_tween(button, "scale", Vector2.ONE, tween_duration)
+
+
 	
 func get_rule(name, rule):
 	"""get the text for a given rule, given the name of a card"""
