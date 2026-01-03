@@ -52,6 +52,13 @@ script = ExtResource("1_6bp64")
 tween_intensity = 1.2
 tween_duration = 0.3
 
+[node name="Background" type="ColorRect" parent="."]
+visibility_layer = 512
+z_index = -4096
+offset_right = 1928.0
+offset_bottom = 1083.0
+color = Color(0.19865194, 0.23049131, 0.22083691, 1)
+
 [node name="CardManager" type="Node2D" parent="."]
 script = ExtResource("1_jjvhh")
 
@@ -85,13 +92,6 @@ texture = ExtResource("5_kry3j")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Deck/Area2D"]
 position = Vector2(0, -1.5)
 shape = SubResource("RectangleShape2D_21xkr")
-
-[node name="Background" type="ColorRect" parent="."]
-visibility_layer = 512
-z_index = -4096
-offset_right = 1928.0
-offset_bottom = 1083.0
-color = Color(0.19865194, 0.23049131, 0.22083691, 1)
 
 [node name="Button" type="Button" parent="."]
 offset_left = 1174.0
