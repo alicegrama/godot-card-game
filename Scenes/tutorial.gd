@@ -4,11 +4,14 @@ extends Node
 @onready var intro_layer: Control = $RootControl/UILayer/IntroLayer
 
 @onready var deck: CanvasItem = $"../Deck"
-@onready var rules_panel: CanvasItem = $"../Rules"
+@onready var rules_panel: CanvasItem = $"../Phase"
 @onready var end_button: CanvasItem = $"../Button"
+@onready var take_button: CanvasItem = $"../Take"
+@onready var card_slot: CanvasItem = $"../CardSlot/Area2D2"
+
 
 @onready var tooltip: Control = $RootControl/UILayer/Tooltip
-@onready var tooltip_label: Label = $RootControl/UILayer/Tooltip/TooltipLabel
+@onready var tooltip_label: Label = $RootControl/UILayer/Tooltip/MarginContainer/TooltipLabel
 
 
 
@@ -24,16 +27,24 @@ func _ready() -> void:
 	steps = [
 		{
 			"target": deck,
-			"text": "This is the deck. Drawing cards is one of the core actions."
+			"text": "This is the deck. Both you and the computer opponent can draw a card."
+		},
+		{
+			"target": take_button,
+			"text": "When it's your turn (green background), you can use this button to take a card."
+		},
+		{
+			"target": card_slot,
+			"text": "Both you and the computer can choose if you want a starting card in the middle."
+		},
+		{
+			"target": end_button,
+			"text": "Both you and your opponent can end the setup phase. If you're satisfied with the setup, use this button to move on to playing the game."
 		},
 		{
 			"target": rules_panel,
 			"text": "Rules appear here as they are created during play."
 		},
-		{
-			"target": end_button,
-			"text": "End the setup phase once you're satisfied with the starting rules."
-		}
 	]
 
 	show_intro()

@@ -531,6 +531,7 @@ func _on_button_pressed() -> void:
 	if state == "setup" and cardmanager.interaction:
 		state = "choice"
 		cardmanager.interaction = false
+		$Button.visible = false
 		if cardslot.card != null:
 			$Setup.text = "Setup Rules: Draw %d cards, and put a card on the table" % [len(playerhand.hand)]
 		else:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cluyc22bda4y5"]
+[gd_scene load_steps=23 format=3 uid="uid://cluyc22bda4y5"]
 
 [ext_resource type="Script" uid="uid://6g4a80d3mne8" path="res://Scenes/main.gd" id="1_6bp64"]
 [ext_resource type="Script" uid="uid://bon2fqscvj6ib" path="res://Scripts/CardManager.gd" id="1_jjvhh"]
@@ -9,17 +9,43 @@
 [ext_resource type="Texture2D" uid="uid://dobivb8fv8wcg" path="res://Assets/card_deck.png" id="5_kry3j"]
 [ext_resource type="Shader" uid="uid://e7aki33g53s5" path="res://Shaders/spotlight_mask.gdshader" id="8_344ge"]
 [ext_resource type="Script" uid="uid://dw1myoeo4xj2q" path="res://Scenes/tutorial.gd" id="8_ynf5e"]
+[ext_resource type="FontFile" uid="uid://cntp64xoco33" path="res://Assets/Poppins-Bold.ttf" id="10_hptm8"]
+[ext_resource type="FontFile" uid="uid://br6rssepsg4qp" path="res://Assets/Poppins-Regular.ttf" id="11_d1ilt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_21xkr"]
 size = Vector2(235, 347)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jkdf5"]
+bg_color = Color(0.73333335, 0.22352941, 0.16470589, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wsu2k"]
+bg_color = Color(0.07450981, 0.07450981, 0.07450981, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k12tt"]
+bg_color = Color(0.07450981, 0.07450981, 0.07450981, 1)
+
 [sub_resource type="Theme" id="Theme_6bp64"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fdnlq"]
+bg_color = Color(0.07484526, 0.07484528, 0.07484522, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_344ge"]
 shader = ExtResource("8_344ge")
 shader_parameter/spotlight_pos = Vector2(0.5, 0.5)
 shader_parameter/spotlight_radius = 0.15
 shader_parameter/softness = 0.02
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6iyac"]
+bg_color = Color(0.92535293, 0.9253528, 0.9253529, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ynf5e"]
+bg_color = Color(0.73333335, 0.22352941, 0.16470589, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hptm8"]
+bg_color = Color(0.65, 0.19370002, 0.143, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d1ilt"]
+bg_color = Color(0.6, 0.17880003, 0.13200003, 1)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_6bp64")
@@ -72,6 +98,7 @@ offset_left = 1174.0
 offset_top = 440.0
 offset_right = 1374.0
 offset_bottom = 490.0
+theme_override_styles/hover = SubResource("StyleBoxFlat_jkdf5")
 text = "End Setup Phase"
 
 [node name="Uno" type="Button" parent="."]
@@ -80,7 +107,9 @@ offset_left = 500.0
 offset_top = 500.0
 offset_right = 600.0
 offset_bottom = 600.0
-text = "UNO"
+theme_override_styles/hover = SubResource("StyleBoxFlat_wsu2k")
+text = "Opt 1: 
+UNO"
 
 [node name="Points" type="Button" parent="."]
 visible = false
@@ -88,14 +117,17 @@ offset_left = 650.0
 offset_top = 500.0
 offset_right = 750.0
 offset_bottom = 600.0
-text = "POINTS"
+theme_override_styles/hover = SubResource("StyleBoxFlat_k12tt")
+text = "Opt 2: 
+POINTS"
 
 [node name="Give" type="Button" parent="."]
 visible = false
 offset_left = 280.0
 offset_top = 440.0
-offset_right = 322.0
-offset_bottom = 471.0
+offset_right = 380.0
+offset_bottom = 490.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
 text = "Give"
 
 [node name="Take" type="Button" parent="."]
@@ -105,56 +137,64 @@ offset_top = 440.0
 offset_right = 380.0
 offset_bottom = 490.0
 theme = SubResource("Theme_6bp64")
+theme_override_fonts/font = ExtResource("11_d1ilt")
+theme_override_styles/hover = SubResource("StyleBoxFlat_fdnlq")
 text = "Take"
 
 [node name="Skip" type="Button" parent="."]
 visible = false
 offset_left = 608.0
 offset_top = 360.0
-offset_right = 649.0
-offset_bottom = 391.0
+offset_right = 658.0
+offset_bottom = 395.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
 text = "Skip"
 
 [node name="Suit" type="Button" parent="."]
 visible = false
-offset_left = 704.0
+offset_left = 670.0
 offset_top = 360.0
-offset_right = 742.0
-offset_bottom = 391.0
-text = "Suit"
+offset_right = 790.0
+offset_bottom = 395.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+text = "Change suit"
 
 [node name="Heart" type="Button" parent="."]
 visible = false
 offset_left = 704.0
 offset_top = 408.0
-offset_right = 754.0
-offset_bottom = 439.0
-text = "heart"
+offset_right = 784.0
+offset_bottom = 443.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+text = "Heart"
 
 [node name="Club" type="Button" parent="."]
 visible = false
 offset_left = 704.0
 offset_top = 456.0
-offset_right = 745.0
-offset_bottom = 487.0
-text = "club"
+offset_right = 784.0
+offset_bottom = 491.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+text = "Club"
 
 [node name="Spade" type="Button" parent="."]
 visible = false
 offset_left = 704.0
 offset_top = 496.0
-offset_right = 759.0
-offset_bottom = 527.0
-text = "spade
+offset_right = 784.0
+offset_bottom = 531.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+text = "Spade
 "
 
 [node name="Diamond" type="Button" parent="."]
 visible = false
 offset_left = 704.0
 offset_top = 536.0
-offset_right = 781.0
-offset_bottom = 567.0
-text = "diamond"
+offset_right = 784.0
+offset_bottom = 571.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+text = "Diamond"
 
 [node name="OpScore" type="Label" parent="."]
 visible = false
@@ -178,12 +218,15 @@ offset_left = 1064.0
 offset_top = 490.0
 offset_right = 1111.0
 offset_bottom = 539.0
+theme_override_font_sizes/font_size = 18
 
 [node name="Ending" type="Label" parent="."]
 offset_left = 1064.0
 offset_top = 363.0
 offset_right = 1117.0
 offset_bottom = 412.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+theme_override_font_sizes/font_size = 18
 
 [node name="Remove" type="Button" parent="."]
 visible = false
@@ -191,6 +234,7 @@ offset_left = 395.0
 offset_top = 441.0
 offset_right = 525.0
 offset_bottom = 491.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
 text = "Remove Rule"
 
 [node name="Phase" type="Label" parent="."]
@@ -198,24 +242,32 @@ offset_left = 1064.0
 offset_top = 303.0
 offset_right = 1111.0
 offset_bottom = 326.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+theme_override_font_sizes/font_size = 18
 
 [node name="Setup" type="Label" parent="."]
 offset_left = 1064.0
 offset_top = 326.0
 offset_right = 1109.0
 offset_bottom = 349.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+theme_override_font_sizes/font_size = 18
 
 [node name="Round" type="Label" parent="."]
 offset_left = 1064.0
 offset_top = 263.0
 offset_right = 1104.0
 offset_bottom = 286.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+theme_override_font_sizes/font_size = 18
 
 [node name="Const" type="Label" parent="."]
 offset_left = 1064.0
 offset_top = 346.0
 offset_right = 1111.0
 offset_bottom = 369.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
+theme_override_font_sizes/font_size = 18
 text = "Rules:"
 
 [node name="Tutorial" type="CanvasLayer" parent="."]
@@ -230,7 +282,8 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="DimOverlay" type="ColorRect" parent="Tutorial/RootControl"]
-z_index = 80
+z_index = 3
+z_as_relative = false
 material = SubResource("ShaderMaterial_344ge")
 layout_mode = 1
 anchors_preset = 15
@@ -249,6 +302,34 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Tooltip" type="PanelContainer" parent="Tutorial/RootControl/UILayer"]
+visible = false
+z_index = 4
+layout_direction = 4
+layout_mode = 0
+offset_left = 200.0
+offset_right = 500.0
+offset_bottom = 26.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_6iyac")
+
+[node name="MarginContainer" type="MarginContainer" parent="Tutorial/RootControl/UILayer/Tooltip"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="TooltipLabel" type="Label" parent="Tutorial/RootControl/UILayer/Tooltip/MarginContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_constants/line_spacing = 3
+theme_override_fonts/font = ExtResource("11_d1ilt")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 2
+
 [node name="IntroLayer" type="PanelContainer" parent="Tutorial/RootControl/UILayer"]
 layout_mode = 1
 anchors_preset = 15
@@ -260,42 +341,37 @@ mouse_filter = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Tutorial/RootControl/UILayer/IntroLayer"]
 layout_mode = 2
+theme_override_constants/separation = 24
 alignment = 1
 
 [node name="Title" type="Label" parent="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer"]
 z_index = 100
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 50
+theme_override_fonts/font = ExtResource("10_hptm8")
+theme_override_font_sizes/font_size = 64
 text = "CoCards"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer"]
 z_index = 100
 layout_mode = 2
+theme_override_fonts/font = ExtResource("11_d1ilt")
 theme_override_font_sizes/font_size = 24
 text = "A Mixed-Initiative Card Game for Rule Co-Creation"
 horizontal_alignment = 1
 
 [node name="Start Tutorial" type="Button" parent="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer"]
 z_index = 100
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("11_d1ilt")
 theme_override_font_sizes/font_size = 24
-text = "Let's start"
-
-[node name="Tooltip" type="PanelContainer" parent="Tutorial/RootControl/UILayer"]
-visible = false
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-mouse_filter = 2
-
-[node name="TooltipLabel" type="Label" parent="Tutorial/RootControl/UILayer/Tooltip"]
-custom_minimum_size = Vector2(300, 0)
-layout_mode = 2
-horizontal_alignment = 1
-autowrap_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ynf5e")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hptm8")
+theme_override_styles/hover = SubResource("StyleBoxFlat_d1ilt")
+text = "        Start        "
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Uno" to="." method="_on_uno_pressed"]
