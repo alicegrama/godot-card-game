@@ -1,3 +1,4 @@
+"""Script for keeping track of all cards, also has the logic for interacting with cards."""
 extends Node2D
 
 const COLLISION_MASK_CARD = 1

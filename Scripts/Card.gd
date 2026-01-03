@@ -1,3 +1,5 @@
+"""Script for a single card, appoints sprites, keeps its suit and rank."""
+
 extends Node2D
 
 signal hovered

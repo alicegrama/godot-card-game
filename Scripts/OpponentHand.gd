@@ -1,3 +1,5 @@
+"""Script for keeping track of the cards in the hand of the system."""
+
 extends Node2D
 
 const CARD_WIDTH = 200
