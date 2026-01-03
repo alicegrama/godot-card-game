@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cluyc22bda4y5"]
+[gd_scene load_steps=13 format=3 uid="uid://cluyc22bda4y5"]
 
 [ext_resource type="Script" uid="uid://6g4a80d3mne8" path="res://Scenes/main.gd" id="1_6bp64"]
 [ext_resource type="Script" uid="uid://bon2fqscvj6ib" path="res://Scripts/CardManager.gd" id="1_jjvhh"]
@@ -7,11 +7,19 @@
 [ext_resource type="Script" uid="uid://cau7ku3mdtw1x" path="res://Scripts/PlayerHand.gd" id="4_6bp64"]
 [ext_resource type="Script" uid="uid://dyhio266iyieu" path="res://Scripts/OpponentHand.gd" id="5_21xkr"]
 [ext_resource type="Texture2D" uid="uid://dobivb8fv8wcg" path="res://Assets/card_deck.png" id="5_kry3j"]
+[ext_resource type="Shader" uid="uid://e7aki33g53s5" path="res://Shaders/spotlight_mask.gdshader" id="8_344ge"]
+[ext_resource type="Script" uid="uid://dw1myoeo4xj2q" path="res://Scenes/tutorial.gd" id="8_ynf5e"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_21xkr"]
 size = Vector2(235, 347)
 
 [sub_resource type="Theme" id="Theme_6bp64"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_344ge"]
+shader = ExtResource("8_344ge")
+shader_parameter/spotlight_pos = Vector2(0.5, 0.5)
+shader_parameter/spotlight_radius = 0.15
+shader_parameter/softness = 0.02
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_6bp64")
@@ -210,6 +218,85 @@ offset_right = 1111.0
 offset_bottom = 369.0
 text = "Rules:"
 
+[node name="Tutorial" type="CanvasLayer" parent="."]
+script = ExtResource("8_ynf5e")
+
+[node name="RootControl" type="Control" parent="Tutorial"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DimOverlay" type="ColorRect" parent="Tutorial/RootControl"]
+z_index = 80
+material = SubResource("ShaderMaterial_344ge")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.7058824)
+
+[node name="UILayer" type="Control" parent="Tutorial/RootControl"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="IntroLayer" type="PanelContainer" parent="Tutorial/RootControl/UILayer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Tutorial/RootControl/UILayer/IntroLayer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer"]
+z_index = 100
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 50
+text = "CoCards"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer"]
+z_index = 100
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "A Mixed-Initiative Card Game for Rule Co-Creation"
+horizontal_alignment = 1
+
+[node name="Start Tutorial" type="Button" parent="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer"]
+z_index = 100
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 24
+text = "Let's start"
+
+[node name="Tooltip" type="PanelContainer" parent="Tutorial/RootControl/UILayer"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="TooltipLabel" type="Label" parent="Tutorial/RootControl/UILayer/Tooltip"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 2
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Uno" to="." method="_on_uno_pressed"]
 [connection signal="pressed" from="Points" to="." method="_on_points_pressed"]
@@ -222,3 +309,5 @@ text = "Rules:"
 [connection signal="pressed" from="Spade" to="." method="_on_spade_pressed"]
 [connection signal="pressed" from="Diamond" to="." method="_on_diamond_pressed"]
 [connection signal="pressed" from="Remove" to="." method="_on_remove_pressed"]
+[connection signal="pressed" from="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer/Start Tutorial" to="." method="start_tutorial"]
+[connection signal="pressed" from="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer/Start Tutorial" to="Tutorial" method="start_tutorial"]
