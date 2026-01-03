@@ -7,10 +7,19 @@ UNO or POINTS
 """
 extends Node2D
 
+@export var tween_intensity: float
+@export var tween_duration: float
+
 @onready var playerhand = $PlayerHand
 @onready var cardmanager = $CardManager
 @onready var opponenthand = $OpponentHand
 @onready var cardslot = $CardSlot
+
+@onready var take: Button = $Take
+@onready var end: Button = $Button
+@onready var uno: Button = $Uno
+@onready var points: Button = $Points
+@onready var remove: Button = $Remove
 
 var playablecards = []
 
@@ -67,6 +76,8 @@ var pointrules = []
 var ending = 0
 var history = []
  
+
+
 func get_color(suit):
 	"""Given a suit returns the color of the suit."""
 	if suit == 's':
@@ -94,7 +105,26 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	btn_hovered(take)
+	btn_hovered(end)
+	btn_hovered(uno)
+	btn_hovered(points)
+	btn_hovered(remove)
+	
+
+func start_tween(object: Object, property: String, final_val: Variant, duration: float):
+	var tween = create_tween()
+	tween.tween_property(object, property, final_val, duration)
+	
+	
+func btn_hovered(button: Button):
+	button.pivot_offset = button.size /2
+	if button.is_hovered():
+		start_tween(button, "scale", Vector2.ONE * tween_intensity, tween_duration)
+	else:
+		start_tween(button, "scale", Vector2.ONE, tween_duration)
+
+
 	
 func end_game():
 	state = "done"
@@ -227,6 +257,7 @@ func playable(hand):
 	
 func player_turn():
 	"""When it is the players turn, give the player interaction and set correct states."""
+	$Background.color = "2b302b"
 	if len(playerhand.hand) == 0 or len(opponenthand.hand) == 0:
 		end_game()
 	turn = 0
@@ -305,6 +336,7 @@ func uno_decision(card):
 
 func opponent_turn():
 	"""oppents turn, if allowed to take action place a card which is allowed."""
+	$Background.color = "2b2d2b"
 	turn = 1
 	if skip:
 		skip = false
@@ -344,6 +376,7 @@ func opponent_turn():
 	
 func playersetup():
 	"""A turn for the player in the setup"""
+	$Background.color = "2b302b"
 	#player can take a action.
 	cardmanager.interaction = true
 	
@@ -375,6 +408,7 @@ func election(pick, seed):
 	
 func opponentsetup():
 	"""opponents turn in the setup, with given changes given the hand size."""
+	$Background.color = "2b2d2b"
 	#opponent takes a card
 	cardmanager.interaction = false
 	await get_tree().create_timer(1.0).timeout
@@ -497,7 +531,7 @@ func toggle_actions(visible):
 	"""toggles the action buttons you can take, to being the visible: true or false"""
 	playerstate = "action"
 	$Button.visible = visible
-	$ColorRect.visible = visible
+	
 	$Skip.visible = visible
 	$Suit.visible = visible
 	$Give.visible = visible
@@ -511,6 +545,7 @@ func _on_button_pressed() -> void:
 	if state == "setup" and cardmanager.interaction:
 		state = "choice"
 		cardmanager.interaction = false
+		$Button.visible = false
 		if cardslot.card != null:
 			$Setup.text = "Setup Rules: Draw %d cards, and put a card on the table" % [len(playerhand.hand)]
 		else:
@@ -526,7 +561,6 @@ func _on_uno_pressed() -> void:
 	$Round.text = "Round 1"
 	$Button.text ="No Action"
 	$Button.visible = false
-	$ColorRect.visible = false
 	state = "uno"
 	$Phase.text = "Phase: Game maker"
 	player_turn()
@@ -542,7 +576,6 @@ func _on_points_pressed() -> void:
 	$Points.visible = false
 	$OpScore.visible = true
 	$PlayScore.visible = true
-	$ColorRect.visible = false
 	$Button.visible = false
 	$Take.visible = false
 	initial_rules()
@@ -958,3 +991,7 @@ func _on_remove_pressed() -> void:
 			rules[[i, cardslot.card.number]] = 0
 		display_rules()
 		bot["rule_changer"] += 0.2 * (1-bot["rule_changer"])
+
+
+func start_tutorial() -> void:
+	pass # Replace with function body.
