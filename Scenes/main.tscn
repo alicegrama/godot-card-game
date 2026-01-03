@@ -107,6 +107,7 @@ offset_left = 500.0
 offset_top = 500.0
 offset_right = 600.0
 offset_bottom = 600.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
 theme_override_styles/hover = SubResource("StyleBoxFlat_wsu2k")
 text = "Opt 1: 
 UNO"
@@ -117,6 +118,7 @@ offset_left = 650.0
 offset_top = 500.0
 offset_right = 750.0
 offset_bottom = 600.0
+theme_override_fonts/font = ExtResource("11_d1ilt")
 theme_override_styles/hover = SubResource("StyleBoxFlat_k12tt")
 text = "Opt 2: 
 POINTS"
