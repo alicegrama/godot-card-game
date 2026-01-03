@@ -1,3 +1,10 @@
+"""Within the script of main, the interaction with the main screen is implemented. However most importantly 
+it holds the logic for the co-creative tool.
+
+The Co-creative is designed in two phases
+SETUP
+UNO or POINTS
+"""
 extends Node2D
 
 @onready var playerhand = $PlayerHand
@@ -19,9 +26,9 @@ var globrules = [2, 3]
 #2: suit on suit -> 1: color on color -> 0:nothing
 #3: number on number -> 2: number => n or 1: number <= number -> 0: nothing
 var rules = {}
+#UNO
 #0 = nothing, 1 = take a card, 2 = your turn, 3 = change suit, 
 #4 = give/take card of hand, 5 = look at card
-#POINTS it is the basevalue
 
 #we model the player to get a appropiate bot, reflecting the creation of the player
 var bot = {
@@ -74,7 +81,10 @@ func get_color(suit):
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	#To emit a signal when a turn is finished.
 	turn_finished.connect(_on_turn_finished)
+	
+	#initialising the rules.
 	for i in range(14):
 		for j in ["h", "c", "d", "s"]:
 			rules[[j, i]] = null
@@ -82,10 +92,13 @@ func _ready() -> void:
 	#start the setup
 	setup()
 
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+	
+func end_game():
+	state = "done"
+	$Phase.text = "Finished"
 	
 func get_rule(name, rule):
 	"""get the text for a given rule, given the name of a card"""
@@ -134,7 +147,8 @@ func display_rules():
 		placetext += "Numbers greater\n"
 	elif globrules[1] == 1:
 		placetext += "Numbers smaller\n"
-		
+	
+	#Card rules
 	for i in range(1, 14):
 		var rule = []
 		var name = ""
@@ -543,7 +557,15 @@ func add_rule(suit, number, rule):
 	for i in ["h", "c", "d", "s"]:
 		if rules[[i, number]] == null or rules[[i, number]] == 0:
 			rules[[i, number]] = rule
+			
+func toggle_suitbuttons():
+	"""The buttons to change the suit of the played card"""
+	$Heart.visible = !$Heart.visible
+	$Club.visible = !$Club.visible
+	$Spade.visible = !$Spade.visible
+	$Diamond.visible = !$Diamond.visible
 
+#BUTTONS
 func _on_give_pressed() -> void:
 	"""The give button is pressed, the opponent is given a card."""
 	if state == "uno" and cardmanager.interaction and playerstate == "action":
@@ -575,41 +597,27 @@ func _on_suit_pressed() -> void:
 	if state == "uno" and cardmanager.interaction and playerstate == "action":
 		add_rule(cardslot.card.suit, cardslot.card.number, 3)
 		take_action(cardslot.card.suit, cardslot.card.number, 1)
-
-func toggle_suitbuttons():
-	"""The buttons to change the suit of the played card"""
-	$Heart.visible = !$Heart.visible
-	$Club.visible = !$Club.visible
-	$Spade.visible = !$Spade.visible
-	$Diamond.visible = !$Diamond.visible
 	
-
+#BUTTONS to change the suit of the card at the top of the dicard.
 func _on_heart_pressed() -> void:
 	toggle_suitbuttons()
 	cardslot.card.setup("h", cardslot.card.number)
 	turn_finished.emit()
-
 
 func _on_club_pressed() -> void:
 	toggle_suitbuttons()
 	cardslot.card.setup("c", cardslot.card.number)
 	turn_finished.emit()
 
-
 func _on_spade_pressed() -> void:
 	toggle_suitbuttons()
 	cardslot.card.setup("s", cardslot.card.number)
 	turn_finished.emit()
 
-
 func _on_diamond_pressed() -> void:
 	toggle_suitbuttons()
 	cardslot.card.setup("d", cardslot.card.number)
 	turn_finished.emit()
-	
-func end_game():
-	state = "done"
-	$Phase.text = "Finished"
 	
 #Underneath is every extra function for the points game
 
@@ -844,35 +852,34 @@ func chain_rule():
 	return 0
 		
 func sequence_rule():
-	""""""
+	"""When a card is one rank from the previous, give 20 points"""
 	if len(history) >= 3:
 		var card = history[-1]
 		var prev = history[-2]
 		if abs(card[1] - prev[1]) == 1:
 			return 20
 	return 0
-		
-func destruct_rule():
-	pass
-
-func swap_rule():
-	pass #swap hands
 	
 func draw_rule(hand):
+	"""Draw a card from the given hand"""
 	if len(history) > 0 and history[-1] == 2:
 		cardmanager.draw_card(hand)
 		
 func even_odd_rule(even):
+	"""Given a boolean even.
+	given 8 points appropiate to if the card is even or not."""
 	if len(history) > 0 and history[-1][1] % 2 == int(even):
 		return 8
 	return 0
 
 func micro_rule():
+	"""Give low cards smaller equal to 5, 15 points."""
 	if len(history) > 0 and history[-1][1] <= 5 and history[-1][1] > 1 :
 		return 15
 	return 0
 	
 func face_rule():
+	"""Give cards with a face 10 points."""
 	if len(history) > 0 and history[-1][1] >= 11:
 		return 10
 	return 0
