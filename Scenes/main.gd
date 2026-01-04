@@ -838,8 +838,10 @@ func pointscore():
 		if i[0] == 10:
 			textrules += "\n Obsession %d: Playing '%d' gives +25 pts." %[i[1], i[1]]
 			score += rank_rule(i[1])
+		
 		if i[0] == 11:
-			textrules += "\n Law of %s: %s cards: +10 pts." %[i[1], i[1]]
+			var suit_name = get_full_suit_name(i[1])
+			textrules += "\n Law of %s: %s cards: +10 pts." %[suit_name, suit_name]
 			score += suit_rule(i[1])
 		if i[0] == 12:
 			textrules += "\n Universal Balance: There is a HIDDEN card that is God (+100 pts)\n and another Devil (-100 pts)."
@@ -983,6 +985,16 @@ func special_rules(hand):
 		if history[-1][1] == 11 and i[0] == 5:
 			cardmanager.swap()
 
+
+func get_full_suit_name(suit_data) -> String:
+	var s = str(suit_data).to_lower()
+	
+	match s:
+		"h", "hearts": return "Hearts"
+		"d", "diamonds": return "Diamonds"
+		"c", "clubs": return "Clubs"
+		"s", "spades": return "Spades"
+		_: return str(suit_data)
 
 func _on_remove_pressed() -> void:
 	#remove the rules of all cards with number
