@@ -120,6 +120,8 @@ func disable_spotlight() -> void:
 func end_tutorial() -> void:
 	dim_overlay.visible = false
 	queue_free()
+	#start setup
+	$"..".setup()
 
 
 func _input(event: InputEvent) -> void:

@@ -100,8 +100,6 @@ func _ready() -> void:
 		for j in ["h", "c", "d", "s"]:
 			rules[[j, i]] = null
 	$Phase.text = "Phase: Setup phase."
-	#start the setup
-	setup()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -1003,7 +1001,3 @@ func _on_remove_pressed() -> void:
 			rules[[i, cardslot.card.number]] = 0
 		display_rules()
 		bot["rule_changer"] += 0.2 * (1-bot["rule_changer"])
-
-
-func start_tutorial() -> void:
-	pass # Replace with function body.

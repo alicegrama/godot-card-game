@@ -94,9 +94,9 @@ position = Vector2(0, -1.5)
 shape = SubResource("RectangleShape2D_21xkr")
 
 [node name="Button" type="Button" parent="."]
-offset_left = 1174.0
+offset_left = 590.0
 offset_top = 440.0
-offset_right = 1374.0
+offset_right = 790.0
 offset_bottom = 490.0
 theme_override_styles/hover = SubResource("StyleBoxFlat_jkdf5")
 text = "End Setup Phase"
@@ -217,9 +217,9 @@ text = "Score Player: 0
 
 [node name="Rules" type="Label" parent="."]
 offset_left = 1064.0
-offset_top = 490.0
+offset_top = 423.0
 offset_right = 1111.0
-offset_bottom = 539.0
+offset_bottom = 472.0
 theme_override_font_sizes/font_size = 18
 
 [node name="Ending" type="Label" parent="."]
@@ -387,5 +387,4 @@ text = "        Start        "
 [connection signal="pressed" from="Spade" to="." method="_on_spade_pressed"]
 [connection signal="pressed" from="Diamond" to="." method="_on_diamond_pressed"]
 [connection signal="pressed" from="Remove" to="." method="_on_remove_pressed"]
-[connection signal="pressed" from="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer/Start Tutorial" to="." method="start_tutorial"]
 [connection signal="pressed" from="Tutorial/RootControl/UILayer/IntroLayer/VBoxContainer/Start Tutorial" to="Tutorial" method="start_tutorial"]
