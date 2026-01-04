@@ -667,7 +667,7 @@ func initial_rules():
 	if ending == 3:
 		$Ending.text = "Ending: Panic Button (Play a Q after turn 10)"
 		
-	pointrules = [[[0], [11, ["h", "c", "d", "s"].pick_random()], [16], [8], [9], [13, 8, 6, 10], [3], [1], [2]].pick_random()]
+	pointrules = [[[0], [11, ["Hearts", "Clubs", "Diamonds", "Spades"].pick_random()], [16], [8], [9], [8, 6, 10], [3], [1], [2]].pick_random()]
 	pointscore()
 
 func check_rule_decay():
@@ -683,7 +683,7 @@ func generate_rule(prob):
 	var nrules = len(pointrules)
 	# Logic 60% Justification / 40% Complex
 	if randf() < prob:
-		if randf() < 0.6:
+		if randf() < 0.75:
 			create_justification_rule()
 			if len(pointrules) == nrules:
 				create_complex_rule()
@@ -770,7 +770,7 @@ func create_complex_rule():
 		var dsuit = ["h", "c", "d", "s"].pick_random()
 		var dnumber = randi() % 13 +1
 		weighted_candidates.append([12, gsuit, gnumber, dsuit, dnumber])
-		probs.append(30)
+		probs.append(20)
 	if [13] not in pointrules:
 		var mine_val = randi() % 13 +2
 		var offset = randi() % 5
@@ -811,7 +811,7 @@ func pointscore():
 			textrules += "\n Standard Value: Points = Card value (2-14)."
 			score += value_rule()
 		if i[0] == 1:
-			textrules += "\n Sandwich: Sandwich (e.g., 5-K-5) -> Steal middle value + 30 pts."
+			textrules += "\n Sandwich (e.g., 5-K-5): Steal middle value + 30 pts."
 			score += sandwich_rule()
 		if i[0] == 2:
 			textrules += "\n Chain Reaction: Extend existing sequence -> +50 pts."
@@ -845,7 +845,7 @@ func pointscore():
 			textrules += "\n Universal Balance: There is a HIDDEN card that is God (+100 pts)\n and another Devil (-100 pts)."
 			score += yingyang_rule(i[1], i[2], i[3], i[4])
 		if i[0] == 13:
-			textrules += "\n Range: %d - %d gives +20 pts... But there is a MINE!" % [i[2],i[3]]
+			textrules += "\n Minefield: %d - %d gives +20 pts... But there is a MINE!" % [i[2],i[3]]
 			score += minefield_rule(i[1], i[2], i[3])
 		if i[0] == 14:
 			textrules += "\n SOLAR ECLIPSE! The hierarchy is inverted: 2 is the strongest (Ace),\n Ace is the weakest (2)."
