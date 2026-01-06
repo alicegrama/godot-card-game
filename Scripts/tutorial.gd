@@ -1,23 +1,18 @@
+"""Script for giving the tutorial of the card game, Afterwards the main game will begin."""
 extends Node
 
 @onready var dim_overlay: ColorRect = $RootControl/DimOverlay
 @onready var intro_layer: Control = $RootControl/UILayer/IntroLayer
-
 @onready var deck: CanvasItem = $"../Deck"
 @onready var rules_panel: CanvasItem = $"../Phase"
 @onready var end_button: CanvasItem = $"../Button"
 @onready var take_button: CanvasItem = $"../Take"
 @onready var card_slot: CanvasItem = $"../CardSlot/Area2D2"
-
-
 @onready var tooltip: Control = $RootControl/UILayer/Tooltip
 @onready var tooltip_label: Label = $RootControl/UILayer/Tooltip/MarginContainer/TooltipLabel
 
-
-
 var spotlight_material: ShaderMaterial
 var step: int = 0
-
 var steps: Array[Dictionary] = []
 
 
@@ -50,7 +45,6 @@ func _ready() -> void:
 	show_intro()
 
 
-
 func show_intro() -> void:
 	dim_overlay.visible = true
 	intro_layer.visible = true
@@ -64,6 +58,7 @@ func start_tutorial() -> void:
 
 
 func next_step() -> void:
+	"""Give the next instructions"""
 	if step >= steps.size():
 		end_tutorial()
 		return
@@ -90,7 +85,6 @@ func show_tooltip(text: String, target: CanvasItem) -> void:
 		global_pos = target.global_position
 
 	tooltip.global_position = global_pos + Vector2(-150, 120)
-
 
 
 func move_spotlight_to(target: CanvasItem) -> void:

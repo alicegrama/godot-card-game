@@ -1,6 +1,6 @@
 [gd_scene load_steps=23 format=3 uid="uid://cluyc22bda4y5"]
 
-[ext_resource type="Script" uid="uid://6g4a80d3mne8" path="res://Scenes/main.gd" id="1_6bp64"]
+[ext_resource type="Script" uid="uid://6g4a80d3mne8" path="res://main.gd" id="1_6bp64"]
 [ext_resource type="Script" uid="uid://bon2fqscvj6ib" path="res://Scripts/CardManager.gd" id="1_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://dsv2wif6rrygj" path="res://Scenes/card_slot.tscn" id="2_kry3j"]
 [ext_resource type="Script" uid="uid://b2fa7edhpbioa" path="res://Scripts/CardSlot.gd" id="3_21xkr"]
@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://dyhio266iyieu" path="res://Scripts/OpponentHand.gd" id="5_21xkr"]
 [ext_resource type="Texture2D" uid="uid://dobivb8fv8wcg" path="res://Assets/card_deck.png" id="5_kry3j"]
 [ext_resource type="Shader" uid="uid://e7aki33g53s5" path="res://Shaders/spotlight_mask.gdshader" id="8_344ge"]
-[ext_resource type="Script" uid="uid://dw1myoeo4xj2q" path="res://Scenes/tutorial.gd" id="8_ynf5e"]
+[ext_resource type="Script" uid="uid://dw1myoeo4xj2q" path="res://Scripts/tutorial.gd" id="8_ynf5e"]
 [ext_resource type="FontFile" uid="uid://cntp64xoco33" path="res://Assets/Poppins-Bold.ttf" id="10_hptm8"]
 [ext_resource type="FontFile" uid="uid://br6rssepsg4qp" path="res://Assets/Poppins-Regular.ttf" id="11_d1ilt"]
 

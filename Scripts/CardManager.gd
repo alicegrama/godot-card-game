@@ -11,7 +11,6 @@ var screen_size
 var is_hovering_on_card
 var player_hand_reference
 var opponent_hand_reference
-
 var deck = []
 var interaction = false
 
@@ -23,9 +22,10 @@ func _ready() -> void:
 	for i in range(1, 14):
 		for j in ["h", "c", "d", "s"]:
 			deck.append([j, i])
-	
+
+
 func draw_deck(hand):
-	#draw a card from the deck returns the card
+	"""draw a card from the deck returns the card"""
 	if not deck:
 		return
 		
@@ -41,7 +41,8 @@ func draw_deck(hand):
 	hand.add_card_to_hand(new_card, 0.1)
 	if hand == opponent_hand_reference:
 		new_card.toggle()
-	
+
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if card_being_dragged:
@@ -49,7 +50,9 @@ func _process(delta: float) -> void:
 		card_being_dragged.position = Vector2(clamp(mouse_pos.x, 0, screen_size.x),
 			 clamp(mouse_pos.y, 0, screen_size.y))
 
+
 func _input(event):
+	"""Catch the input of the user."""
 	if !interaction:
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -83,13 +86,10 @@ func _input(event):
 			elif card == $"../CardSlot" and $"../CardSlot".card == null and $"..".state == "setup":
 				draw_deck($"../CardSlot")
 				$"..".opponentsetup()
-		else:
-			if card_being_dragged:
-				pass
-				#finish_drag()
-				
+
+
 func place_card(id, hand):
-	#places card the discard place
+	"""places card (id) to the discard deck from the given hand."""
 	hand.animate_card_to_position(id, $"../CardSlot".position, 0.1)
 	hand.remove_card_from_hand(id)
 	id.all_off()
@@ -100,9 +100,11 @@ func place_card(id, hand):
 		#make the id card move to the background
 	$"../CardSlot".card = id
 
+
 func start_drag(card):
 	card_being_dragged = card
 	card.scale = Vector2(1, 1)
+
 
 func finish_drag():
 	print("Running")
@@ -118,15 +120,18 @@ func finish_drag():
 		player_hand_reference.add_card_to_hand(card_being_dragged,RETURN_TO_HAND_SPEED )
 	card_being_dragged = null
 
+
 func connect_card_signals(card):
 	card.connect("hovered", on_hovered_over_card)
 	card.connect("hovered_off", on_hovered_off_card)
-	
+
+
 func on_hovered_over_card(card):
 	if !is_hovering_on_card:
 		is_hovering_on_card = true
 		highlight_card(card,  true)
-	
+
+
 func on_hovered_off_card(card):
 	if !card_being_dragged:
 		# if not dragging
@@ -137,7 +142,7 @@ func on_hovered_off_card(card):
 		highlight_card(new_card_hovered, true)
 	else: 
 		is_hovering_on_card = false
-	
+
 
 func highlight_card(card, hovered):
 	if hovered:
@@ -147,6 +152,7 @@ func highlight_card(card, hovered):
 		card.scale = Vector2(1, 1)
 		card.z_index = 1
 
+
 func raycast_check_for_card_slot():
 	var space_state = get_world_2d().direct_space_state
 	var parameters = PhysicsPointQueryParameters2D.new()
@@ -155,9 +161,9 @@ func raycast_check_for_card_slot():
 	parameters.collision_mask = COLLISION_MASK_CARD_SLOT
 	var result = space_state.intersect_point(parameters)
 	if result.size() > 0:
-		# return result[0].collider.get_parent()
 		return result[0].collider.get_parent()
 	return null
+
 
 func raycast_check_for_card():
 	var space_state = get_world_2d().direct_space_state
@@ -172,6 +178,7 @@ func raycast_check_for_card():
 	return null
 # Called when the node enters the scene tree for the first time.
 
+
 func get_card_with_highest_z_index(cards):
 	# assume the first card in cards array has the highest z index
 	var highest_z_card = cards[0].collider.get_parent()
@@ -185,8 +192,9 @@ func get_card_with_highest_z_index(cards):
 			highest_z_index = current_card.z_index
 	return highest_z_card
 
+
 func take(card, player):
-	#take a card from another hand
+	"""take a card from another hand"""
 	if player:
 		#player has taken card
 		player_hand_reference.add_card_to_hand(card, RETURN_TO_HAND_SPEED)
@@ -208,13 +216,15 @@ func take(card, player):
 		#make sure see the correct space
 		card.toggle()
 		card.toggle_take(false)
-		
+
+
 func looked():
-	#player has looked at a card
+	"""When a player has looked at a card, finish the round"""
 	$"..".add_rule($"../CardSlot".card.suit, $"../CardSlot".card.number, 6)
 	$"..".toggle_actions(false)
 	$"..".turn_finished.emit()
-	
+
+
 func swap():
 	"""swaps the cards between hands"""
 	var swap = player_hand_reference.hand

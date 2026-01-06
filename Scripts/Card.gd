@@ -46,13 +46,15 @@ func _ready() -> void:
 	get_parent().connect_card_signals(self)
 	
 func setup(s, n):
-	#give the card its suit and number
+	"""give the card its suit and number"""
 	suit = s
 	number = n
 	$CardImage.texture = carddata[s][n]
 
+
 func get_suit_number():
 	return [suit, number]
+
 
 func _on_area_2d_mouse_entered() -> void:
 	emit_signal("hovered", self)
@@ -60,30 +62,37 @@ func _on_area_2d_mouse_entered() -> void:
 
 func _on_area_2d_mouse_exited() -> void:
 	emit_signal("hovered_off", self)
-	
+
+
 func toggle():
 	#hides the card or lets them show.
 	$CardImageBack.visible = !$CardImageBack.visible
-	
+
+
 func all_off():
 	#remove all buttons of the card
 	toggle_give(false)
 	toggle_take(false)
 	toggle_look(false)
-		
+
+
 func toggle_take(visible):
 	$Take.visible = visible
-	
+
+
 func toggle_give(visible):
 	$Give.visible = visible
-	
+
+
 func toggle_look(visible):
 	$Look.visible = visible
-	
+
+
 func _on_take_pressed() -> void:
 	toggle_look(false)
 	toggle_take(false)
 	$"..".take($".", 1)
+
 
 func _on_give_pressed() -> void:
 	$"..".take($".", 0)
@@ -94,6 +103,7 @@ func _on_look_pressed() -> void:
 	await get_tree().create_timer(2.0).timeout
 	toggle()
 	$"../".looked()
-	
+
+
 func move_forward():
 	position.y -= 50

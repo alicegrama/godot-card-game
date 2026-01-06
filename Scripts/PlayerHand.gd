@@ -17,8 +17,9 @@ var hand = [] # array of card names
 func _ready():
 	pass
 
-# called when player stops dragging a card, and when new card drawn from deck
+
 func add_card_to_hand(card, speed_to_move):
+	"""Called when player stops dragging a card, and when new card drawn from deck"""
 	# if card drawn from deck
 	if card not in hand:
 		hand.insert(0, card)
@@ -27,8 +28,9 @@ func add_card_to_hand(card, speed_to_move):
 		animate_card_to_position(card, card.starting_position, speed_to_move)
 
 
-# updates positions of all cards in the hand
+
 func update_hand_positions(speed):
+	"""Updates positions of all cards in the hand"""
 	for i in range(hand.size()):
 		var new_position = calculate_card_position(i)
 		var card = hand[i]
@@ -36,31 +38,33 @@ func update_hand_positions(speed):
 		animate_card_to_position(card, new_position, speed)
 
 
-# calculates the position for a card based on its index in the hand
 func calculate_card_position(index):
+	"""Calculates the position for a card based on its index in the hand"""
 	var center_screen_x = get_viewport().size.x / 2
 	var total_width = (hand.size() - 1) * CARD_SPACING
 	var x_offset = center_screen_x + index * CARD_SPACING - total_width / 2
 	return Vector2(x_offset, HAND_Y_POSITION + $".".position[1])
 
 
-# animates a card to a target position using a tween
 func animate_card_to_position(card, new_position, speed_to_move):
+	"""Animates a card to a target position using a tween"""
 	var tween = get_tree().create_tween()
 	tween.tween_property(card, "position", new_position, speed_to_move)
 
 
-# removes a card from the hand and updates remaining card positions
 func remove_card_from_hand(card_name):
+	"""Removes a card from the hand and updates remaining card positions"""
 	# get the card node from the CardManager
 	var card = card_manager.get_node(str(card_name))
 	if card in hand:
 		hand.erase(card)
 		update_hand_positions(UPDATE_CARD_POS_SPEED)
-		
+
+
 func toggle_take(visible):
 	for i in hand:
 		i.toggle_take(visible)
+
 
 func toggle_give(visible):
 	for i in hand:
