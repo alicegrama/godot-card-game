@@ -131,6 +131,7 @@ func end_game():
 	$Phase.text = "Finished"
 	show_game_over()
 
+
 func show_game_over():
 	print("SHOW GAME OVER CALLED")
 	game_over_layer.visible = true
@@ -485,8 +486,7 @@ func _on_turn_finished():
 	"""an signal for ending the opponents or players turn and give it to the other."""
 	#end of a points game
 	if state == "points" and checkend():
-		state = "done"
-		$Phase.text = "Phase: Finished"
+		end_game()
 		return
 	elif state == "uno":
 		display_rules()

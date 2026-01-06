@@ -1,6 +1,6 @@
 [gd_scene load_steps=23 format=3 uid="uid://cluyc22bda4y5"]
 
-[ext_resource type="Script" uid="uid://b6by7kjd7o36u" path="res://main.gd" id="1_6bp64"]
+[ext_resource type="Script" uid="uid://6g4a80d3mne8" path="res://main.gd" id="1_6bp64"]
 [ext_resource type="Script" uid="uid://bon2fqscvj6ib" path="res://Scripts/CardManager.gd" id="1_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://dsv2wif6rrygj" path="res://Scenes/card_slot.tscn" id="2_kry3j"]
 [ext_resource type="Script" uid="uid://b2fa7edhpbioa" path="res://Scripts/CardSlot.gd" id="3_21xkr"]
