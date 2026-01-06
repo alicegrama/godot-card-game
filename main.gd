@@ -21,6 +21,10 @@ extends Node2D
 @onready var points: Button = $Points
 @onready var remove: Button = $Remove
 
+@onready var game_over_layer: CanvasLayer = $GameOverLayer
+@onready var game_over_overlay: ColorRect = $GameOverLayer/GameOverOverlay
+@onready var game_over_label: Label = $GameOverLayer/GameOverOverlay/CenterContainer/Label
+
 var playablecards = []
 
 var state = "setup" #setup, uno, points, done 
@@ -89,6 +93,7 @@ func get_color(suit):
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	game_over_layer.visible = false
 	#To emit a signal when a turn is finished.
 	turn_finished.connect(_on_turn_finished)
 	
@@ -124,6 +129,29 @@ func btn_hovered(button: Button):
 func end_game():
 	state = "done"
 	$Phase.text = "Finished"
+	show_game_over()
+
+func show_game_over():
+	print("SHOW GAME OVER CALLED")
+	game_over_layer.visible = true
+	game_over_overlay.visible = true
+	# game_over_overlay.modulate = Color(0, 0, 0, 0.7)
+	
+	var text := ""
+	
+	if len(playerhand.hand) == 0:
+		text = "You won!"
+	elif len(opponenthand.hand) == 0:
+		text = "Your opponent won!"
+	elif playerscore > opponentscore:
+		text = "You won!"
+	elif opponentscore > playerscore:
+		text = "Your opponent won!"
+	else:
+		text = "Draw!"
+	
+	game_over_label.text = text
+	
 
 
 func get_rule(name, rule):
