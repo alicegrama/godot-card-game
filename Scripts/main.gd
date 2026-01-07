@@ -23,7 +23,7 @@ extends Node2D
 
 @onready var game_over_layer: CanvasLayer = $GameOverLayer
 @onready var game_over_overlay: ColorRect = $GameOverLayer/GameOverOverlay
-@onready var game_over_label: Label = $GameOverLayer/GameOverOverlay/CenterContainer/VBoxContainer/Label
+@onready var game_over_label: Label = $GameOverLayer/GameOverOverlay/CenterContainer2/Label
 
 var playablecards = []
 
@@ -133,10 +133,9 @@ func end_game():
 
 
 func show_game_over():
-	# print("SHOW GAME OVER CALLED")
+	"""give the game over state, with the results"""
 	game_over_layer.visible = true
 	game_over_overlay.visible = true
-	# game_over_overlay.modulate = Color(0, 0, 0, 0.7)
 	
 	var text := ""
 	
