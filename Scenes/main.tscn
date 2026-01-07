@@ -1,6 +1,6 @@
 [gd_scene load_steps=23 format=3 uid="uid://cluyc22bda4y5"]
 
-[ext_resource type="Script" uid="uid://6g4a80d3mne8" path="res://main.gd" id="1_6bp64"]
+[ext_resource type="Script" uid="uid://6g4a80d3mne8" path="res://Scripts/main.gd" id="1_6bp64"]
 [ext_resource type="Script" uid="uid://bon2fqscvj6ib" path="res://Scripts/CardManager.gd" id="1_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://dsv2wif6rrygj" path="res://Scenes/card_slot.tscn" id="2_kry3j"]
 [ext_resource type="Script" uid="uid://b2fa7edhpbioa" path="res://Scripts/CardSlot.gd" id="3_21xkr"]
@@ -388,6 +388,24 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.7058824)
 
+[node name="CenterContainer2" type="CenterContainer" parent="GameOverLayer/GameOverOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 368.0
+offset_bottom = 368.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="GameOverLayer/GameOverOverlay/CenterContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("11_d1ilt")
+theme_override_font_sizes/font_size = 36
+text = "You won! But the real point was co-creating the game."
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="CenterContainer" type="CenterContainer" parent="GameOverLayer/GameOverOverlay"]
 layout_mode = 1
 anchors_preset = 15
@@ -405,13 +423,6 @@ theme_override_fonts/font = ExtResource("10_hptm8")
 theme_override_font_sizes/font_size = 64
 text = "Game Over"
 horizontal_alignment = 1
-
-[node name="Label" type="Label" parent="GameOverLayer/GameOverOverlay/CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("11_d1ilt")
-theme_override_font_sizes/font_size = 36
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Uno" to="." method="_on_uno_pressed"]
