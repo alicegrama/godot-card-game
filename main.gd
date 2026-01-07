@@ -23,7 +23,7 @@ extends Node2D
 
 @onready var game_over_layer: CanvasLayer = $GameOverLayer
 @onready var game_over_overlay: ColorRect = $GameOverLayer/GameOverOverlay
-@onready var game_over_label: Label = $GameOverLayer/GameOverOverlay/CenterContainer/Label
+@onready var game_over_label: Label = $GameOverLayer/GameOverOverlay/CenterContainer/VBoxContainer/Label
 
 var playablecards = []
 
@@ -133,7 +133,7 @@ func end_game():
 
 
 func show_game_over():
-	print("SHOW GAME OVER CALLED")
+	# print("SHOW GAME OVER CALLED")
 	game_over_layer.visible = true
 	game_over_overlay.visible = true
 	# game_over_overlay.modulate = Color(0, 0, 0, 0.7)
@@ -141,15 +141,15 @@ func show_game_over():
 	var text := ""
 	
 	if len(playerhand.hand) == 0:
-		text = "You won!"
+		text = "You won! But the real point was co-creating the game."
 	elif len(opponenthand.hand) == 0:
-		text = "Your opponent won!"
+		text = "Your opponent won! But the real point was co-creating the game."
 	elif playerscore > opponentscore:
-		text = "You won!"
+		text = "You won! But the real point was co-creating the game."
 	elif opponentscore > playerscore:
-		text = "Your opponent won!"
+		text = "Your opponent won! But the real point was co-creating the game."
 	else:
-		text = "Draw!"
+		text = "Draw! But the real point was co-creating the game."
 	
 	game_over_label.text = text
 	
